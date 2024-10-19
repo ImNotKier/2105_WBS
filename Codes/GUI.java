@@ -1,40 +1,31 @@
-
 import java.awt.*;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 
-public class GUI {
-    
-    public GUI(){
-        JFrame frame = new JFrame("Water Billing System");
+class GUI {
+    JFrame frame;
+    JPanel panel;
+
+
+    public GUI(String title) {
+        frame = new JFrame(title);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
-
+        frame.setSize(600, 400);
         frame.setLayout(new BorderLayout());
 
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(173, 216, 230)); // Light blue background (R:173, G:216, B:230)
-        panel.setLayout(new GridLayout(3, 1, 10, 10)); // 3 rows, 1 column, 10px gaps
+        panel = new JPanel();
+        panel.setLayout(new GridLayout(1, 4, 20, 20));
+    }
 
-        JButton registerButton = new JButton("Register");
-        JButton loginButton = new JButton("Log In");
-        JButton adminLoginButton = new JButton("Admin Login");
+    public JButton createButton(String text, Color color) {
+        JButton button = new JButton(text);
+        button.setBackground(color);
+        button.setOpaque(true);
+        button.setBorderPainted(false);
+        return button;
+    }
 
-        panel.add(registerButton);
-        panel.add(loginButton);
-        panel.add(adminLoginButton);
-
-        JLabel titleLabel = new JLabel("Water Billing System", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-
-        frame.add(titleLabel, BorderLayout.NORTH);
+    public void showUI() {
         frame.add(panel, BorderLayout.CENTER);
-
         frame.setVisible(true);
     }
-    
-
 }
