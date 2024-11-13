@@ -49,17 +49,17 @@ public class AdminUI extends javax.swing.JFrame {
                 DisconnectButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(DisconnectButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 50, 180, -1));
+        getContentPane().add(DisconnectButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 50, 180, -1));
 
         ConsumerButton.setBackground(new java.awt.Color(0, 153, 153));
         ConsumerButton.setFont(new java.awt.Font("Serif", 1, 17)); // NOI18N
         ConsumerButton.setForeground(new java.awt.Color(255, 255, 255));
         ConsumerButton.setText("Comsumers");
-        getContentPane().add(ConsumerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 50, 140, 30));
+        getContentPane().add(ConsumerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 50, 140, 30));
 
         background.setFont(new java.awt.Font("Rockwell Extra Bold", 1, 24)); // NOI18N
         background.setText("WATER  BILLING  SYSTEM");
-        getContentPane().add(background, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 0, 400, 30));
+        getContentPane().add(background, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, 400, 30));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Water Systems Earth Science Presentation in Blue White Illustrated Style (1) (1).jpg"))); // NOI18N
         jLabel1.setText("background");
