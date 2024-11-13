@@ -38,23 +38,23 @@ public class UserUI extends javax.swing.JFrame {
         PaymentButton.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
         PaymentButton.setForeground(new java.awt.Color(255, 255, 255));
         PaymentButton.setText("Payment");
-        getContentPane().add(PaymentButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 40, 150, 30));
+        getContentPane().add(PaymentButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 50, 150, 30));
 
         ledgerButton.setBackground(new java.awt.Color(0, 153, 153));
         ledgerButton.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
         ledgerButton.setForeground(new java.awt.Color(255, 255, 255));
         ledgerButton.setText("Ledger");
-        getContentPane().add(ledgerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 40, 150, 30));
+        getContentPane().add(ledgerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 50, 150, 30));
 
         WaterMeterButton.setBackground(new java.awt.Color(0, 153, 153));
         WaterMeterButton.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
         WaterMeterButton.setForeground(new java.awt.Color(255, 255, 255));
         WaterMeterButton.setText("Water Meter");
-        getContentPane().add(WaterMeterButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 40, 140, 30));
+        getContentPane().add(WaterMeterButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 50, 140, 30));
 
         background.setFont(new java.awt.Font("Rockwell Extra Bold", 1, 24)); // NOI18N
         background.setText("WATER  BILLING  SYSTEM");
-        getContentPane().add(background, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 0, 400, 30));
+        getContentPane().add(background, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, 400, 30));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Water Systems Earth Science Presentation in Blue White Illustrated Style (1) (1).jpg"))); // NOI18N
         jLabel1.setText("background");

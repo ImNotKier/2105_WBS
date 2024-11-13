@@ -54,7 +54,7 @@ public class AdminUI extends javax.swing.JFrame {
         ConsumerButton.setBackground(new java.awt.Color(0, 153, 153));
         ConsumerButton.setFont(new java.awt.Font("Serif", 1, 17)); // NOI18N
         ConsumerButton.setForeground(new java.awt.Color(255, 255, 255));
-        ConsumerButton.setText("Comsumers");
+        ConsumerButton.setText("Consumers");
         getContentPane().add(ConsumerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 50, 140, 30));
 
         background.setFont(new java.awt.Font("Rockwell Extra Bold", 1, 24)); // NOI18N
