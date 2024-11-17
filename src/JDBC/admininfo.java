@@ -1,3 +1,5 @@
+package JDBC;
+
 public class admininfo {
     private String email = "root_admin@wbs", password = "@dm!np@ss";
     //getter

@@ -1,3 +1,5 @@
+package GUI;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -7,12 +9,12 @@
  *
  * @author catib
  */
-public class AdminUI extends javax.swing.JFrame {
+public class UserUI extends javax.swing.JFrame {
 
     /**
      * Creates new form UserUI
      */
-    public AdminUI() {
+    public UserUI() {
         initComponents();
     }
 
@@ -25,36 +27,38 @@ public class AdminUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        PaymentButton = new javax.swing.JButton();
+        ledgerButton = new javax.swing.JButton();
+        WaterMeterButton = new javax.swing.JButton();
         background = new javax.swing.JLabel();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        PaymentButton.setBackground(new java.awt.Color(0, 153, 153));
+        PaymentButton.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        PaymentButton.setForeground(new java.awt.Color(255, 255, 255));
+        PaymentButton.setText("Payment");
+        getContentPane().add(PaymentButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 50, 150, 30));
+
+        ledgerButton.setBackground(new java.awt.Color(0, 153, 153));
+        ledgerButton.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        ledgerButton.setForeground(new java.awt.Color(255, 255, 255));
+        ledgerButton.setText("Ledger");
+        getContentPane().add(ledgerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 50, 150, 30));
+
+        WaterMeterButton.setBackground(new java.awt.Color(0, 153, 153));
+        WaterMeterButton.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
+        WaterMeterButton.setForeground(new java.awt.Color(255, 255, 255));
+        WaterMeterButton.setText("Water Meter");
+        getContentPane().add(WaterMeterButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 50, 140, 30));
+
         background.setFont(new java.awt.Font("Rockwell Extra Bold", 1, 24)); // NOI18N
         background.setText("WATER  BILLING  SYSTEM");
         getContentPane().add(background, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, 400, 30));
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setOpaque(false);
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jTabbedPane1.addTab("tab1", jPanel1);
-
-        jPanel2.setOpaque(false);
-        jTabbedPane1.addTab("tab2", jPanel2);
-
-        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel3.setOpaque(false);
-        jTabbedPane1.addTab("tab3", jPanel3);
-
-        getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 930, 490));
-
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Water Systems Earth Science Presentation in Blue White Illustrated Style (1) (1).jpg"))); // NOI18N
-        jLabel1.setLabelFor(background);
         jLabel1.setText("background");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-20, 0, 950, 520));
 
@@ -97,11 +101,10 @@ public class AdminUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton PaymentButton;
+    private javax.swing.JButton WaterMeterButton;
     private javax.swing.JLabel background;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JButton ledgerButton;
     // End of variables declaration//GEN-END:variables
 }

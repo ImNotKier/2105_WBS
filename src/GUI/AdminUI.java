@@ -1,3 +1,13 @@
+package GUI;
+
+import JDBC.DatabaseConnector;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.table.DefaultTableModel;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -7,15 +17,57 @@
  *
  * @author catib
  */
-public class UserUI extends javax.swing.JFrame {
+public final class AdminUI extends javax.swing.JFrame {
 
     /**
      * Creates new form UserUI
      */
-    public UserUI() {
+    public AdminUI() {
         initComponents();
+        fetchDataFromDatabase();
     }
 
+    public void fetchDataFromDatabase() {
+    try{
+        // Get a database connection
+        Connection connection = DatabaseConnector.getConnection();
+        // Create a statement
+        Statement statement = connection.createStatement();
+        // Execute the query (replace with your actual table name)
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM consumers");
+        // Get column names from ResultSetMetaData
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        String[] columnNames = new String[columnCount];
+        for (int i = 1; i <= columnCount; i++) {
+            columnNames[i - 1] = metaData.getColumnName(i);
+        }
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+
+        // Populate the table model
+        while (resultSet.next()) {
+            Object[] rowData = new Object[columnCount];
+            for (int i = 1; i <= columnCount; i++) {
+                rowData[i - 1] = resultSet.getObject(i);
+            }
+            model.addRow(rowData);
+        }
+
+        // Set the table model to the JTable
+        jTable1.setModel(model);
+
+        // Close resources
+        resultSet.close();
+        statement.close();
+        DatabaseConnector.closeConnection(connection);
+        
+        
+
+    } catch (SQLException | ClassNotFoundException e) {
+        e.printStackTrace();
+        // Handle exceptions appropriately (e.g., display error message)
+    }
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -25,38 +77,47 @@ public class UserUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        PaymentButton = new javax.swing.JButton();
-        ledgerButton = new javax.swing.JButton();
-        WaterMeterButton = new javax.swing.JButton();
         background = new javax.swing.JLabel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        PaymentButton.setBackground(new java.awt.Color(0, 153, 153));
-        PaymentButton.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
-        PaymentButton.setForeground(new java.awt.Color(255, 255, 255));
-        PaymentButton.setText("Payment");
-        getContentPane().add(PaymentButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 50, 150, 30));
-
-        ledgerButton.setBackground(new java.awt.Color(0, 153, 153));
-        ledgerButton.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
-        ledgerButton.setForeground(new java.awt.Color(255, 255, 255));
-        ledgerButton.setText("Ledger");
-        getContentPane().add(ledgerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 50, 150, 30));
-
-        WaterMeterButton.setBackground(new java.awt.Color(0, 153, 153));
-        WaterMeterButton.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
-        WaterMeterButton.setForeground(new java.awt.Color(255, 255, 255));
-        WaterMeterButton.setText("Water Meter");
-        getContentPane().add(WaterMeterButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 50, 140, 30));
-
         background.setFont(new java.awt.Font("Rockwell Extra Bold", 1, 24)); // NOI18N
         background.setText("WATER  BILLING  SYSTEM");
         getContentPane().add(background, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, 400, 30));
 
+        jTabbedPane1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setOpaque(false);
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
+        jTable1.setOpaque(false);
+        jScrollPane1.setViewportView(jTable1);
+
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 880, 330));
+
+        jTabbedPane1.addTab("Consumers", jPanel1);
+
+        jPanel2.setOpaque(false);
+        jTabbedPane1.addTab("Consessionnaires", jPanel2);
+
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel3.setOpaque(false);
+        jTabbedPane1.addTab("For Disconnection", jPanel3);
+
+        getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 930, 490));
+
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Water Systems Earth Science Presentation in Blue White Illustrated Style (1) (1).jpg"))); // NOI18N
+        jLabel1.setLabelFor(background);
         jLabel1.setText("background");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-20, 0, 950, 520));
 
@@ -99,10 +160,13 @@ public class UserUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton PaymentButton;
-    private javax.swing.JButton WaterMeterButton;
     private javax.swing.JLabel background;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JButton ledgerButton;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }
