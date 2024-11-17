@@ -2,6 +2,7 @@
 /AdminUI$2.class
 /AdminUI.class
 /AdminUI.form
+/DatabaseConnector.class
 /LoginUI$1.class
 /LoginUI$2.class
 /LoginUI$3.class
@@ -10,9 +11,8 @@
 /UserUI$1.class
 /UserUI.class
 /UserUI.form
-/icons/
-/DatabaseConnector.class
 /admininfo.class
+/icons/
 /testUI$1.class
 /testUI$2.class
 /testUI.class

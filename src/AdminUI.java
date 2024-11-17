@@ -25,52 +25,41 @@ public class AdminUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        RegisterButton = new javax.swing.JButton();
-        DisconnectButton = new javax.swing.JButton();
-        ConsumerButton = new javax.swing.JButton();
         background = new javax.swing.JLabel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        RegisterButton.setBackground(new java.awt.Color(0, 153, 153));
-        RegisterButton.setFont(new java.awt.Font("Serif", 1, 16)); // NOI18N
-        RegisterButton.setForeground(new java.awt.Color(255, 255, 255));
-        RegisterButton.setText("Register New Costumer");
-        getContentPane().add(RegisterButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 49, 200, -1));
-
-        DisconnectButton.setBackground(new java.awt.Color(0, 153, 153));
-        DisconnectButton.setFont(new java.awt.Font("Serif", 1, 16)); // NOI18N
-        DisconnectButton.setForeground(new java.awt.Color(255, 255, 255));
-        DisconnectButton.setText("For Disconnection");
-        DisconnectButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DisconnectButtonActionPerformed(evt);
-            }
-        });
-        getContentPane().add(DisconnectButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 50, 180, -1));
-
-        ConsumerButton.setBackground(new java.awt.Color(0, 153, 153));
-        ConsumerButton.setFont(new java.awt.Font("Serif", 1, 17)); // NOI18N
-        ConsumerButton.setForeground(new java.awt.Color(255, 255, 255));
-        ConsumerButton.setText("Consumers");
-        getContentPane().add(ConsumerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 50, 140, 30));
-
         background.setFont(new java.awt.Font("Rockwell Extra Bold", 1, 24)); // NOI18N
         background.setText("WATER  BILLING  SYSTEM");
         getContentPane().add(background, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, 400, 30));
 
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setOpaque(false);
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jTabbedPane1.addTab("tab1", jPanel1);
+
+        jPanel2.setOpaque(false);
+        jTabbedPane1.addTab("tab2", jPanel2);
+
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel3.setOpaque(false);
+        jTabbedPane1.addTab("tab3", jPanel3);
+
+        getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 930, 490));
+
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Water Systems Earth Science Presentation in Blue White Illustrated Style (1) (1).jpg"))); // NOI18N
+        jLabel1.setLabelFor(background);
         jLabel1.setText("background");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-20, 0, 950, 520));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void DisconnectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DisconnectButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_DisconnectButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -108,10 +97,11 @@ public class AdminUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton ConsumerButton;
-    private javax.swing.JButton DisconnectButton;
-    private javax.swing.JButton RegisterButton;
     private javax.swing.JLabel background;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 }
