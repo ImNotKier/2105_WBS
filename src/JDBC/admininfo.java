@@ -1,10 +1,11 @@
 package JDBC;
 
 public class admininfo {
-    private String email = "root_admin@wbs", password = "@dm!np@ss";
+    private final String user = "WBSAdmin";
+    private final String password = "WBS_@dmn.root";
     //getter
-    public String getEmail() {
-        return email;
+    public String getUser() {
+        return user;
     }
     public String getPassword() {
         return password;

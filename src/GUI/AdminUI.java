@@ -30,13 +30,13 @@ public final class AdminUI extends javax.swing.JFrame {
     public void fetchDataFromDatabase() {
     try{
         // Get a database connection
-        Connection connection = DatabaseConnector.getConnection();
+        Connection con = DatabaseConnector.getConnection();
         // Create a statement
-        Statement statement = connection.createStatement();
+        Statement st = con.createStatement();
         // Execute the query (replace with your actual table name)
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM consumers");
+        ResultSet rs = st.executeQuery("SELECT * FROM consumers");
         // Get column names from ResultSetMetaData
-        ResultSetMetaData metaData = resultSet.getMetaData();
+        ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
         String[] columnNames = new String[columnCount];
         for (int i = 1; i <= columnCount; i++) {
@@ -45,10 +45,10 @@ public final class AdminUI extends javax.swing.JFrame {
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
 
         // Populate the table model
-        while (resultSet.next()) {
+        while (rs.next()) {
             Object[] rowData = new Object[columnCount];
             for (int i = 1; i <= columnCount; i++) {
-                rowData[i - 1] = resultSet.getObject(i);
+                rowData[i - 1] = rs.getObject(i);
             }
             model.addRow(rowData);
         }
@@ -57,11 +57,9 @@ public final class AdminUI extends javax.swing.JFrame {
         jTable1.setModel(model);
 
         // Close resources
-        resultSet.close();
-        statement.close();
-        DatabaseConnector.closeConnection(connection);
-        
-        
+        rs.close();
+        st.close();
+        DatabaseConnector.closeConnection(con);
 
     } catch (SQLException | ClassNotFoundException e) {
         e.printStackTrace();
@@ -93,9 +91,14 @@ public final class AdminUI extends javax.swing.JFrame {
         background.setText("WATER  BILLING  SYSTEM");
         getContentPane().add(background, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, 400, 30));
 
+        jTabbedPane1.setOpaque(false);
+        jTabbedPane1.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
         jTabbedPane1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setDoubleBuffered(false);
+        jPanel1.setName(""); // NOI18N
+        jPanel1.setOpaque(false);
         jPanel1.setOpaque(false);
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -103,9 +106,9 @@ public final class AdminUI extends javax.swing.JFrame {
         jTable1.setOpaque(false);
         jScrollPane1.setViewportView(jTable1);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 880, 330));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 40, 880, 330));
 
-        jTabbedPane1.addTab("Consumers", jPanel1);
+        jTabbedPane1.addTab("Consumers", new javax.swing.ImageIcon(getClass().getResource("/icons/pngwing.com (2).png")), jPanel1, ""); // NOI18N
 
         jPanel2.setOpaque(false);
         jTabbedPane1.addTab("Consessionnaires", jPanel2);
@@ -114,7 +117,7 @@ public final class AdminUI extends javax.swing.JFrame {
         jPanel3.setOpaque(false);
         jTabbedPane1.addTab("For Disconnection", jPanel3);
 
-        getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 930, 490));
+        getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 930, 480));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Water Systems Earth Science Presentation in Blue White Illustrated Style (1) (1).jpg"))); // NOI18N
         jLabel1.setLabelFor(background);
@@ -154,7 +157,7 @@ public final class AdminUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new UserUI().setVisible(true);
+                new AdminUI().setVisible(true);
             }
         });
     }
