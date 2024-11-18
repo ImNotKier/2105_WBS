@@ -27,36 +27,39 @@ public class UserUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        PaymentButton = new javax.swing.JButton();
-        ledgerButton = new javax.swing.JButton();
-        WaterMeterButton = new javax.swing.JButton();
         background = new javax.swing.JLabel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        PaymentButton.setBackground(new java.awt.Color(0, 153, 153));
-        PaymentButton.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
-        PaymentButton.setForeground(new java.awt.Color(255, 255, 255));
-        PaymentButton.setText("Payment");
-        getContentPane().add(PaymentButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 50, 150, 30));
-
-        ledgerButton.setBackground(new java.awt.Color(0, 153, 153));
-        ledgerButton.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
-        ledgerButton.setForeground(new java.awt.Color(255, 255, 255));
-        ledgerButton.setText("Ledger");
-        getContentPane().add(ledgerButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 50, 150, 30));
-
-        WaterMeterButton.setBackground(new java.awt.Color(0, 153, 153));
-        WaterMeterButton.setFont(new java.awt.Font("Serif", 1, 18)); // NOI18N
-        WaterMeterButton.setForeground(new java.awt.Color(255, 255, 255));
-        WaterMeterButton.setText("Water Meter");
-        getContentPane().add(WaterMeterButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 50, 140, 30));
-
         background.setFont(new java.awt.Font("Rockwell Extra Bold", 1, 24)); // NOI18N
         background.setText("WATER  BILLING  SYSTEM");
         getContentPane().add(background, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, 400, 30));
+
+        jTabbedPane1.addTab("                    Water Mater                   ", jPanel1);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 820, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 295, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("                        Ledger                       ", jPanel2);
+        jTabbedPane1.addTab("                        Arrears                        ", jPanel3);
+        jTabbedPane1.addTab("                      Payment                      ", jPanel4);
+
+        getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, 820, 330));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Water Systems Earth Science Presentation in Blue White Illustrated Style (1) (1).jpg"))); // NOI18N
         jLabel1.setText("background");
@@ -101,10 +104,12 @@ public class UserUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton PaymentButton;
-    private javax.swing.JButton WaterMeterButton;
     private javax.swing.JLabel background;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JButton ledgerButton;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 }
