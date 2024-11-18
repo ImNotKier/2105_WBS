@@ -101,8 +101,6 @@ public final class AdminUI extends javax.swing.JFrame {
     private void initComponents() {
 
         jDialog1 = new javax.swing.JDialog();
-        jLabel4 = new javax.swing.JLabel();
-        background = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -116,7 +114,8 @@ public final class AdminUI extends javax.swing.JFrame {
         Serial = new javax.swing.JButton();
         jComboBox1 = new javax.swing.JComboBox<>();
         Submit = new javax.swing.JButton();
-        jLabel8 = new javax.swing.JLabel();
+        txt = new javax.swing.JLabel();
+        bg = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -132,12 +131,7 @@ public final class AdminUI extends javax.swing.JFrame {
         jDialog1.setTitle("Add New Consumer");
         jDialog1.setLocationByPlatform(true);
         jDialog1.setResizable(false);
-
-        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Water Systems Earth Science Presentation in Blue White Illustrated Style (1) (1).jpg"))); // NOI18N
-        jLabel4.setText("background");
-
-        background.setFont(new java.awt.Font("Rockwell Extra Bold", 1, 24)); // NOI18N
-        background.setText("WATER  BILLING  SYSTEM");
+        jDialog1.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel5.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel5.setText("First  Name: ");
@@ -206,7 +200,7 @@ public final class AdminUI extends javax.swing.JFrame {
 
         Submit.setBackground(new java.awt.Color(214, 255, 231));
         Submit.setFont(new java.awt.Font("Serif", 1, 14)); // NOI18N
-        Submit.setText("Serial iD");
+        Submit.setText("SUBMIT");
         Submit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 SubmitActionPerformed(evt);
@@ -282,53 +276,15 @@ public final class AdminUI extends javax.swing.JFrame {
                 .addContainerGap(41, Short.MAX_VALUE))
         );
 
-        jLabel8.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jLabel8.setText("Email: ");
+        jDialog1.getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 59, -1, -1));
 
-        javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
-        jDialog1.getContentPane().setLayout(jDialog1Layout);
-        jDialog1Layout.setHorizontalGroup(
-            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jDialog1Layout.createSequentialGroup()
-                .addContainerGap(130, Short.MAX_VALUE)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(105, 105, 105))
-            .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jDialog1Layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jDialog1Layout.createSequentialGroup()
-                            .addGap(280, 280, 280)
-                            .addComponent(background, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 950, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGap(0, 0, Short.MAX_VALUE)))
-            .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jDialog1Layout.createSequentialGroup()
-                    .addGap(451, 451, 451)
-                    .addComponent(jLabel8)
-                    .addContainerGap(451, Short.MAX_VALUE)))
-        );
-        jDialog1Layout.setVerticalGroup(
-            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jDialog1Layout.createSequentialGroup()
-                .addContainerGap(59, Short.MAX_VALUE)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(72, 72, 72))
-            .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jDialog1Layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jDialog1Layout.createSequentialGroup()
-                            .addGap(10, 10, 10)
-                            .addComponent(background, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 520, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGap(0, 0, Short.MAX_VALUE)))
-            .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jDialog1Layout.createSequentialGroup()
-                    .addGap(255, 255, 255)
-                    .addComponent(jLabel8)
-                    .addContainerGap(248, Short.MAX_VALUE)))
-        );
+        txt.setFont(new java.awt.Font("Rockwell Extra Bold", 1, 24)); // NOI18N
+        txt.setText("WATER  BILLING  SYSTEM");
+        jDialog1.getContentPane().add(txt, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 10, 400, 30));
+
+        bg.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Water Systems Earth Science Presentation in Blue White Illustrated Style (1) (1).jpg"))); // NOI18N
+        bg.setText("background");
+        jDialog1.getContentPane().add(bg, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 950, 520));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
@@ -403,9 +359,9 @@ public final class AdminUI extends javax.swing.JFrame {
 
         getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 41, 1000, 520));
 
-        jLabel1.setFont(new java.awt.Font("Nirmala UI", 1, 36)); // NOI18N
-        jLabel1.setText("Water Billing System");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, -10, 480, 60));
+        jLabel1.setFont(new java.awt.Font("Rockwell Extra Bold", 1, 24)); // NOI18N
+        jLabel1.setText("WATER BILLING SYSTEM");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 0, 360, 40));
 
         jButton1.setFont(new java.awt.Font("Nirmala UI", 0, 14)); // NOI18N
         jButton1.setText("Add New Consumer");
@@ -498,17 +454,15 @@ public final class AdminUI extends javax.swing.JFrame {
     private javax.swing.JButton Meter;
     private javax.swing.JButton Serial;
     private javax.swing.JButton Submit;
-    private javax.swing.JLabel background;
+    private javax.swing.JLabel bg;
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -523,5 +477,6 @@ public final class AdminUI extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
+    private javax.swing.JLabel txt;
     // End of variables declaration//GEN-END:variables
 }
