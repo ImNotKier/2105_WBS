@@ -134,7 +134,7 @@ public final class AdminUI extends javax.swing.JFrame {
         jDialog1.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel5.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jLabel5.setText("First  Name: ");
+        jLabel5.setText("Last  Name: ");
 
         jLabel6.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel6.setText("First  Name: ");
@@ -284,7 +284,7 @@ public final class AdminUI extends javax.swing.JFrame {
 
         bg.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Water Systems Earth Science Presentation in Blue White Illustrated Style (1) (1).jpg"))); // NOI18N
         bg.setText("background");
-        jDialog1.getContentPane().add(bg, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 950, 520));
+        jDialog1.getContentPane().add(bg, new org.netbeans.lib.awtextra.AbsoluteConstraints(-20, 0, 950, 520));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocationByPlatform(true);
