@@ -1,5 +1,14 @@
 package GUI;
 
+import JDBC.admininfo;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import JDBC.DatabaseConnector;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -11,7 +20,8 @@ package GUI;
  * @author catib
  */
 public class LoginUI extends javax.swing.JFrame {
-
+    JFrame adminFrame = new AdminUI();
+    JFrame userFrame = new UserUI();
     /**
      * Creates new form LoginUI
      */
@@ -205,16 +215,59 @@ public class LoginUI extends javax.swing.JFrame {
         
     }
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
-//        String selectedItem = (String) jComboBox1.getSelectedItem();
-//        String text = jTextField1.getText();
-//        char[] pass = jPasswordField1.getPassword();
-//        if (selectedItem == "Admin"){
-//            if()
-//        }else{
-//            if(text)
-//        }          
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+        
+        admininfo adIn = new admininfo();
+        String selectedItem = (String) jComboBox1.getSelectedItem();
+        String ID = jTextField1.getText();
+        char[] pass = jPasswordField1.getPassword();
+        String passwordString = new String(pass);
+        String admin = adIn.getID();
+        String pwAdmin = adIn.getAdminPassword();
+        if ("Admin".equals(selectedItem)){
+            if((pwAdmin.equals(passwordString))&&(ID.equals(admin))){
+                adminFrame.setVisible(true);
+                dispose();
+            }
+            else{
+                JOptionPane.showMessageDialog(null,"Incorrect username or password. Please try again.","Login Error",JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else{
+            String passID = fetchDataFromDatabase(ID);
+            if(passID == null ? passwordString == null : passID.equals(passwordString)){
+                userFrame.setVisible(true);
+                dispose();
+            }
+            else{
+                JOptionPane.showMessageDialog(null,"Incorrect username or password. Please try again.","Login Error",JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
+    
+public String fetchDataFromDatabase(String ID) {
+    String pass = null;
+    try{
+        // Get a database connection
+        Connection con = DatabaseConnector.getConnection();
+        // Create a statement
+        Statement st = con.createStatement();
+        // Execute the query (replace with your actual table name)
+        ResultSet rs = st.executeQuery("SELECT Password FROM consumerinfo WHERE SerialID = " + ID + ";");
+        if (rs.next()){
+            pass = rs.getString("Password");
+            }
+        // Close resources
+        rs.close();
+        st.close();
+        DatabaseConnector.closeConnection(con);
+        return pass;
+    } catch (SQLException | ClassNotFoundException e) {
+        e.printStackTrace();
+        // Handle exceptions appropriately (e.g., display error message)
+    }
+    return pass;
+}
     
     /**
      * @param args the command line arguments

@@ -38,7 +38,7 @@ public final class AdminUI extends javax.swing.JFrame {
         // Create a statement
         Statement st = con.createStatement();
         // Execute the query (replace with your actual table name)
-        ResultSet rs = st.executeQuery("SELECT * FROM consumers");
+        ResultSet rs = st.executeQuery("SELECT * FROM consumerinfo");
         // Get column names from ResultSetMetaData
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
@@ -61,7 +61,7 @@ public final class AdminUI extends javax.swing.JFrame {
         jTable1.setModel(model);
         
         // for jTable2
-        rs = st.executeQuery("SELECT * FROM consessionnaire");
+        rs = st.executeQuery("SELECT * FROM concessionaire");
         // Get column names from ResultSetMetaData
         metaData = rs.getMetaData();
         columnCount = metaData.getColumnCount();
