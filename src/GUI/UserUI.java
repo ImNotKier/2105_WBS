@@ -103,7 +103,7 @@ public class UserUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("                          Ledger                  ", jPanel2);
+        jTabbedPane1.addTab("                       Ledger                     ", jPanel2);
 
         jPanel3.setOpaque(false);
 

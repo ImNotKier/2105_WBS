@@ -546,7 +546,7 @@
           <Color blue="ff" green="ff" red="e0" type="rgb"/>
         </Property>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="STXinwei" size="14" style="1"/>
+          <Font name="STXinwei" size="12" style="1"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Add new comsummer"/>
       </Properties>
@@ -555,7 +555,7 @@
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="730" y="30" width="180" height="30"/>
+          <AbsoluteConstraints x="760" y="30" width="-1" height="30"/>
         </Constraint>
       </Constraints>
     </Component>

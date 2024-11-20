@@ -404,14 +404,14 @@ public final class AdminUI extends javax.swing.JFrame {
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 0, 360, 40));
 
         jButton1.setBackground(new java.awt.Color(224, 255, 255));
-        jButton1.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
+        jButton1.setFont(new java.awt.Font("STXinwei", 1, 12)); // NOI18N
         jButton1.setText("Add new comsummer");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 30, 180, 30));
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 30, -1, 30));
 
         jButton3.setBackground(new java.awt.Color(224, 255, 255));
         jButton3.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
