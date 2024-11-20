@@ -405,23 +405,24 @@ public final class AdminUI extends javax.swing.JFrame {
 
         jButton1.setBackground(new java.awt.Color(224, 255, 255));
         jButton1.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
-        jButton1.setText("Log  out");
+        jButton1.setText("Add new comsummer");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 510, 140, -1));
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 30, 180, 30));
 
         jButton3.setBackground(new java.awt.Color(224, 255, 255));
         jButton3.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
-        jButton3.setText("Add New Consumer");
+        jButton3.setText("Log   out");
+        jButton3.setPreferredSize(new java.awt.Dimension(87, 25));
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 30, 170, -1));
+        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 510, 130, -1));
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Water Systems Earth Science Presentation in Blue White Illustrated Style (1) (1).jpg"))); // NOI18N
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-20, -8, 990, 560));

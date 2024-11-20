@@ -49,7 +49,7 @@
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="60" y="60" width="850" height="440"/>
+          <AbsoluteConstraints x="50" y="60" width="860" height="440"/>
         </Constraint>
       </Constraints>
 
@@ -61,8 +61,8 @@
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="                    Water Meter                    ">
-                <Property name="tabTitle" type="java.lang.String" value="                    Water Meter                    "/>
+              <JTabbedPaneConstraints tabName="                 Water Meter                 ">
+                <Property name="tabTitle" type="java.lang.String" value="                 Water Meter                 "/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -72,7 +72,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" pref="821" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="831" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -183,7 +183,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane3" pref="821" max="32767" attributes="0"/>
+                      <Component id="jScrollPane3" pref="831" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -228,7 +228,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane4" pref="821" max="32767" attributes="0"/>
+                      <Component id="jScrollPane4" pref="831" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -271,12 +271,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Log  out"/>
       </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
-      </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="770" y="510" width="140" height="-1"/>
+          <AbsoluteConstraints x="790" y="510" width="120" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
