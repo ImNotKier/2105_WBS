@@ -557,31 +557,31 @@ public static int generateMeterID() throws SQLException, ClassNotFoundException 
         // TODO add your handling code here:
     }//GEN-LAST:event_emailFieldActionPerformed
      private void lastNameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lastNameFieldActionPerformed
-        String firstName = firstNameField.getText().trim(); // Get first name
-        String lastName = lastNameField.getText().trim();   // Get last name
+         String firstName = firstNameField.getText().trim(); // Get first name
+    String lastName = lastNameField.getText().trim();   // Get last name
         try {
-            // Check if the name exists in the database
+            // Check if the user exists in the database
             boolean userExists = checkIfUserExists(firstName, lastName);
 
-            // If the user doesn't exist, show the password field
-            if (!userExists) {
-                passwordField.setVisible(true); // Make the password field visible
-                passwordField.requestFocus();  // Focus on the password field
+            // If the user exists, retrieve and display the serial ID
+            if (userExists) {
+                int serialID = getExistingSerialID(firstName, lastName);
+                serialIDField.setText(String.valueOf(serialID)); // Display serial ID for existing user
+                passwordField.setVisible(false); // Hide the password field for existing user
             } else {
-                passwordField.setVisible(false); // Hide the password field if user exists
+                // If the user doesn't exist, generate a new serial ID and show the password field
+                int serialID = generateSerialID(firstName, lastName, null);  // Generate serial ID for new user
+                serialIDField.setText(String.valueOf(serialID));  // Display new serial ID
+                passwordField.setVisible(true);  // Show the password field for new user
+                passwordField.requestFocus();   // Focus on the password field
             }
 
-            // Optionally, generate serial ID for a new user
-            if (!userExists) {
-                int serialID = generateSerialID(firstName, lastName, null);  // Generate serialID for new user
-                serialIDField.setText(String.valueOf(serialID));  // Set the serial ID field
-            }
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_lastNameFieldActionPerformed
 
-     public boolean checkIfUserExists(String firstName, String lastName) throws SQLException, ClassNotFoundException {
+    public boolean checkIfUserExists(String firstName, String lastName) throws SQLException, ClassNotFoundException {
     boolean exists = false;
 
     try (Connection con = DatabaseConnector.getConnection()) {
@@ -599,6 +599,26 @@ public static int generateMeterID() throws SQLException, ClassNotFoundException 
 
     return exists;
 }
+
+public int getExistingSerialID(String firstName, String lastName) throws SQLException, ClassNotFoundException {
+    int serialID = -1; // Default value to indicate not found
+
+    try (Connection con = DatabaseConnector.getConnection()) {
+        String query = "SELECT SerialID FROM consumerinfo WHERE FirstName = ? AND LastName = ?";
+        PreparedStatement stmt = (PreparedStatement) con.prepareStatement(query);
+        stmt.setString(1, firstName);
+        stmt.setString(2, lastName);
+
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                serialID = rs.getInt("SerialID");
+            }
+        }
+    }
+
+    return serialID;
+}
+
     private void firstNameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_firstNameFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_firstNameFieldActionPerformed
