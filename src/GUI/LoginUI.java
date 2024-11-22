@@ -4,10 +4,13 @@ import JDBC.admininfo;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import JDBC.DatabaseConnector;
+import com.mysql.jdbc.PreparedStatement;
+import com.mysql.jdbc.ResultSetMetaData;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.swing.table.DefaultTableModel;
 
 
 /*
@@ -21,7 +24,6 @@ import java.sql.Statement;
  */
 public class LoginUI extends javax.swing.JFrame {
     JFrame adminFrame = new AdminUI();
-    JFrame userFrame = new UserUI();
     /**
      * Creates new form LoginUI
      */
@@ -214,57 +216,59 @@ public class LoginUI extends javax.swing.JFrame {
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {                                           
         
     }
-
+    public static String userIDDB;
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
-        
         admininfo adIn = new admininfo();
         String selectedItem = (String) jComboBox1.getSelectedItem();
-        String ID = jTextField1.getText();
+        String ID = jTextField1.getText().trim(); // Get current ID
+        userIDDB = ID; // Update global variable
         char[] pass = jPasswordField1.getPassword();
         String passwordString = new String(pass);
         String admin = adIn.getID();
         String pwAdmin = adIn.getAdminPassword();
-        if ("Admin".equals(selectedItem)){
-            if((pwAdmin.equals(passwordString))&&(ID.equals(admin))){
-                adminFrame.setVisible(true);
+
+        if ("Admin".equals(selectedItem)) {
+            if (pwAdmin.equals(passwordString) && ID.equals(admin)) {
+                java.awt.EventQueue.invokeLater(() -> {
+                    adminFrame.setVisible(true);
+                });
                 dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, "Incorrect username or password. Please try again.", "Login Error", JOptionPane.ERROR_MESSAGE);
             }
-            else{
-                JOptionPane.showMessageDialog(null,"Incorrect username or password. Please try again.","Login Error",JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        else{
+        } else {
             String passID = fetchDataFromDatabase(ID);
-            if(passID == null ? passwordString == null : passID.equals(passwordString)){
-                userFrame.setVisible(true);
+            if (passID != null && passID.equals(passwordString)) {
+                java.awt.EventQueue.invokeLater(() -> {
+                    UserUI userFrame = new UserUI(ID); // Pass the current ID
+                    userFrame.setVisible(true);
+                });
                 dispose();
-            }
-            else{
-                JOptionPane.showMessageDialog(null,"Incorrect username or password. Please try again.","Login Error",JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Incorrect username or password. Please try again.", "Login Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
-    
+
 public String fetchDataFromDatabase(String ID) {
+    if (ID == null || ID.trim().isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Please enter a valid SerialID.", "Input Error", JOptionPane.ERROR_MESSAGE);
+        return null;
+    }
+
     String pass = null;
-    try{
-        // Get a database connection
-        Connection con = DatabaseConnector.getConnection();
-        // Create a statement
-        Statement st = con.createStatement();
-        // Execute the query (replace with your actual table name)
-        ResultSet rs = st.executeQuery("SELECT Password FROM consumerinfo WHERE SerialID = " + ID + ";");
-        if (rs.next()){
-            pass = rs.getString("Password");
+    try (Connection con = DatabaseConnector.getConnection();
+         PreparedStatement ps = (PreparedStatement) con.prepareStatement("SELECT Password FROM consumerinfo WHERE SerialID = ?")) {
+
+        ps.setString(1, ID);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                pass = rs.getString("Password");
             }
-        // Close resources
-        rs.close();
-        st.close();
-        DatabaseConnector.closeConnection(con);
-        return pass;
+        }
     } catch (SQLException | ClassNotFoundException e) {
         e.printStackTrace();
-        // Handle exceptions appropriately (e.g., display error message)
+        JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
     }
     return pass;
 }
