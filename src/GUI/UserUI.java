@@ -64,13 +64,13 @@ public class UserUI extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(1000, 562));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jButton3.setText("Refresh");
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/loading-arrow.png"))); // NOI18N
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 510, 90, -1));
+        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 10, 30, 30));
 
         jButton4.setText("Print Invoice");
         jButton4.addActionListener(new java.awt.event.ActionListener() {

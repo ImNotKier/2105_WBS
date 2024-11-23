@@ -161,6 +161,8 @@ public final class AdminUI extends javax.swing.JFrame {
         meterIDField = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
         passwordField = new javax.swing.JTextField();
+        addressField = new javax.swing.JTextField();
+        jLabel15 = new javax.swing.JLabel();
         txt = new javax.swing.JLabel();
         bg = new javax.swing.JLabel();
         jDialog2 = new javax.swing.JDialog();
@@ -175,6 +177,7 @@ public final class AdminUI extends javax.swing.JFrame {
         jLabel14 = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -201,7 +204,7 @@ public final class AdminUI extends javax.swing.JFrame {
         jLabel6.setText("First  Name: ");
 
         jLabel7.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jLabel7.setText("Email: ");
+        jLabel7.setText("Email Address: ");
 
         jLabel9.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel9.setText("Contact  Number: ");
@@ -286,6 +289,16 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
         }
     });
 
+    addressField.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+    addressField.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            addressFieldActionPerformed(evt);
+        }
+    });
+
+    jLabel15.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+    jLabel15.setText("Address:");
+
     javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
     jPanel4.setLayout(jPanel4Layout);
     jPanel4Layout.setHorizontalGroup(
@@ -303,86 +316,91 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
                         .addComponent(firstNameField, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
                         .addComponent(jLabel12)
                         .addComponent(passwordField))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(jPanel4Layout.createSequentialGroup()
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lastNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jLabel8)
                                 .addComponent(serialIDField, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGap(83, 83, 83)
                             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(meterIDField)
-                                .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addComponent(lastNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGap(118, 118, 118))
-                .addGroup(jPanel4Layout.createSequentialGroup()
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                            .addComponent(jLabel10)
-                            .addGap(18, 18, 18)
-                            .addComponent(consessionnaireBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGap(118, 118, 118))))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(jPanel4Layout.createSequentialGroup()
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel9)
-                                .addComponent(jLabel7))
-                            .addGap(18, 18, 18)
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(contactNumField, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 111, Short.MAX_VALUE)
-                    .addComponent(Submit)
-                    .addGap(128, 128, 128))))
+                            .addComponent(jLabel7)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(emailField))
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                            .addComponent(jLabel9)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(contactNumField, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
+                            .addComponent(jLabel10))
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                            .addComponent(jLabel15)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(addressField)))
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                            .addGap(45, 45, 45)
+                            .addComponent(Submit))
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(consessionnaireBox, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGap(105, 105, 105))))
     );
     jPanel4Layout.setVerticalGroup(
         jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel4Layout.createSequentialGroup()
-            .addGap(53, 53, 53)
+            .addGap(32, 32, 32)
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabel5)
                 .addComponent(jLabel6))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                .addComponent(lastNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(firstNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addComponent(lastNameField)
+                .addComponent(firstNameField))
             .addGap(27, 27, 27)
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel4Layout.createSequentialGroup()
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel11)
                         .addComponent(jLabel12))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel4Layout.createSequentialGroup()
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(meterIDField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18))))
+                        .addComponent(meterIDField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGroup(jPanel4Layout.createSequentialGroup()
                     .addComponent(jLabel8)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(serialIDField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(jLabel7)
-                .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGap(28, 28, 28)
+                    .addComponent(serialIDField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGap(32, 32, 32)
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabel9)
-                .addComponent(contactNumField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGap(27, 27, 27)
+                .addComponent(contactNumField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel10)
+                .addComponent(consessionnaireBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel4Layout.createSequentialGroup()
-                    .addGap(7, 7, 7)
-                    .addComponent(jLabel10))
+                .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(consessionnaireBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Submit)))
-            .addContainerGap(51, Short.MAX_VALUE))
+                    .addComponent(jLabel7)))
+            .addGap(32, 32, 32)
+            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(jLabel15)
+                .addComponent(addressField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(Submit))
+            .addGap(40, 40, 40))
     );
 
-    jDialog1.getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(116, 59, 730, 380));
+    jDialog1.getContentPane().add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(116, 59, 730, 390));
 
     txt.setFont(new java.awt.Font("Rockwell Extra Bold", 1, 24)); // NOI18N
     txt.setText("WATER  BILLING  SYSTEM");
@@ -498,6 +516,14 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     });
     getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 510, -1, 30));
 
+    jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/loading-arrow.png"))); // NOI18N
+    jButton5.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton5ActionPerformed(evt);
+        }
+    });
+    getContentPane().add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 30, 30));
+
     jTabbedPane1.setPreferredSize(new java.awt.Dimension(930, 540));
 
     jPanel1.setOpaque(false);
@@ -553,6 +579,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
 
     jPanel3.setOpaque(false);
 
+    jTable3.setAutoCreateRowSorter(true);
     disconnectionTable.setViewportView(jTable3);
 
     javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -608,63 +635,62 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-public static int generateSerialID(String firstName, String lastName, String password) throws SQLException, ClassNotFoundException {
-    int serialID = 0; // Default value for existing users
+public static String generateSerialID() throws SQLException, ClassNotFoundException {
+    String serialID;
 
     try (Connection con = DatabaseConnector.getConnection()) {
-        // 1. Check if the name combination exists in the database
-        String query = "SELECT SerialID FROM consumerinfo WHERE FirstName = ? AND LastName = ?";
-        PreparedStatement stmt = (PreparedStatement) con.prepareStatement(query);
-        stmt.setString(1, firstName);
-        stmt.setString(2, lastName);
-        ResultSet rs = stmt.executeQuery();
 
-        if (rs.next()) {
-            // 2. If a match is found, return the existing SerialID
-            serialID = rs.getInt("SerialID");
+        String maxSerialIDQuery = "SELECT MAX(SerialID) AS maxSerialID FROM consumerinfo";
+        PreparedStatement maxStmt = (PreparedStatement) con.prepareStatement(maxSerialIDQuery);
+        ResultSet maxRs = maxStmt.executeQuery();
+        
+        if (maxRs.next() && maxRs.getString("maxSerialID") != null) {
+            int maxSerialID = Integer.parseInt(maxRs.getString("maxSerialID"));
+            serialID = String.valueOf(maxSerialID + 1);
         } else {
-            // 3. If no match is found, predict the next available SerialID
-            String maxSerialIDQuery = "SELECT MAX(SerialID) AS maxSerialID FROM consumerinfo";
-            PreparedStatement maxStmt = (PreparedStatement) con.prepareStatement(maxSerialIDQuery);
-            ResultSet maxRs = maxStmt.executeQuery();
-            
-            if (maxRs.next()) {
-                serialID = maxRs.getInt("maxSerialID") + 1; // Predict next SerialID
-            } else {
-                serialID = 1; // If the table is empty, start with SerialID = 1
-            }
+            serialID = "1";
         }
     } catch (SQLException e) {
         e.printStackTrace();
+        throw e;
     }
 
     return serialID;
 }
-public static int generateMeterID() throws SQLException, ClassNotFoundException {
-    int meterID = 0; // Default value for new meters
+
+public static String generateMeterID() throws SQLException, ClassNotFoundException {
+    String meterID;
 
     try (Connection con = DatabaseConnector.getConnection()) {
-        // 1. Fetch the highest MeterID in the database to predict the next available MeterID
         String maxMeterIDQuery = "SELECT MAX(MeterID) AS maxMeterID FROM watermeter";
         PreparedStatement maxStmt = (PreparedStatement) con.prepareStatement(maxMeterIDQuery);
         ResultSet maxRs = maxStmt.executeQuery();
         
-        if (maxRs.next()) {
-            meterID = maxRs.getInt("maxMeterID") + 1; // Predict next MeterID
+        if (maxRs.next() && maxRs.getString("maxMeterID") != null) {
+            int maxMeterID = Integer.parseInt(maxRs.getString("maxMeterID"));
+            meterID = String.valueOf(maxMeterID + 1);
         } else {
-            meterID = 1; // If the table is empty, start with MeterID = 1
+            meterID = "1";
         }
     } catch (SQLException e) {
         e.printStackTrace();
+        throw e;
     }
 
     return meterID;
 }
 
 
+
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try (Connection con = DatabaseConnector.getConnection()) {
+        serialIDField.setText(generateSerialID());
+        meterIDField.setText(generateMeterID());
         jDialog1.pack();
         jDialog1.setVisible(true);
+        }catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         dispose();
@@ -677,7 +703,7 @@ public static int generateMeterID() throws SQLException, ClassNotFoundException 
             public void actionPerformed(ActionEvent e) {
                 try {
                     // Call the method to generate the next available MeterID
-                    int meterID = generateMeterID();
+                    String meterID = generateMeterID();
                     
                     // Set the predicted MeterID to the meterIDField
                     meterIDField.setText(String.valueOf(meterID)); // Display the predicted MeterID
@@ -688,9 +714,84 @@ public static int generateMeterID() throws SQLException, ClassNotFoundException 
         });
     }//GEN-LAST:event_meterIDFieldActionPerformed
     private void serialIDFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serialIDFieldActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_serialIDFieldActionPerformed
     private void SubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SubmitActionPerformed
+        String fName = firstNameField.getText();
+    String lName = lastNameField.getText();
+    String email = emailField.getText();
+    String address = addressField.getText();
+    String contactNum = contactNumField.getText();
+    String password = passwordField.getText();
+    String sID = null;
+    String meterID = null;
+    int concessionaireID = 0;
+
+    String selectedItem = (String) consessionnaireBox.getSelectedItem();
+    switch (selectedItem) {
+        case "NasugbuWaters" -> concessionaireID = 1;
+        case "BalayanWaterSystem" -> concessionaireID = 2;
+        case "LemeryWaterDistrict" -> concessionaireID = 3;
+        case "CalataganWaterElement" -> concessionaireID = 4;
+    }
+
+    try (Connection con = DatabaseConnector.getConnection()) {
+
+        meterID = generateMeterID();
+
+        String insertConsumerInfoSQL = """
+            INSERT INTO consumerinfo 
+            (firstName, lastName, address, email, contactNumber, Password, meterID) 
+            VALUES (?, ?, ?, ?, ?, ?, ?);
+        """;
+
+        try (PreparedStatement stmt = (PreparedStatement) con.prepareStatement(insertConsumerInfoSQL, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, fName);
+            stmt.setString(2, lName);
+            stmt.setString(3, address);
+            stmt.setString(4, email);
+            stmt.setString(5, contactNum);
+            stmt.setString(6, password);
+            stmt.setString(7, meterID);
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Consumer info inserted successfully.");
+
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    sID = generatedKeys.getString(1); 
+                }
+            } else {
+                System.out.println("Failed to insert consumer info.");
+            }
+        }
+
+        if (sID != null) {
+            String insertWaterMeterSQL = """
+                INSERT INTO watermeter (SerialID, PresentReading, PreviousReading, ConsessionaireID) 
+                VALUES (?, 0, 0, ?);
+            """;
+
+            try (PreparedStatement stmt = (PreparedStatement) con.prepareStatement(insertWaterMeterSQL)) {
+                stmt.setString(1, sID);
+                stmt.setInt(2, concessionaireID);
+
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    System.out.println("Water meter info inserted successfully.");
+                } else {
+                    System.out.println("Failed to insert water meter info.");
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            System.out.println("Failed to generate or retrieve SerialID for water meter.");
+        }
+    } catch (SQLException | ClassNotFoundException ex) {
+        Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+    }
         jDialog1.dispose();
     }//GEN-LAST:event_SubmitActionPerformed
     private void consessionnaireBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_consessionnaireBoxActionPerformed
@@ -703,66 +804,8 @@ public static int generateMeterID() throws SQLException, ClassNotFoundException 
         // TODO add your handling code here:
     }//GEN-LAST:event_emailFieldActionPerformed
      private void lastNameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lastNameFieldActionPerformed
-         String firstName = firstNameField.getText().trim(); // Get first name
-    String lastName = lastNameField.getText().trim();   // Get last name
-        try {
-            // Check if the user exists in the database
-            boolean userExists = checkIfUserExists(firstName, lastName);
 
-            // If the user exists, retrieve and display the serial ID
-            if (userExists) {
-                int serialID = getExistingSerialID(firstName, lastName);
-                serialIDField.setText(String.valueOf(serialID));
-                passwordField.setVisible(false);
-            } else {
-                int serialID = generateSerialID(firstName, lastName, null); 
-                serialIDField.setText(String.valueOf(serialID));
-                passwordField.setVisible(true);  
-                passwordField.requestFocus(); 
-            }
-
-        } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }//GEN-LAST:event_lastNameFieldActionPerformed
-
-    public boolean checkIfUserExists(String firstName, String lastName) throws SQLException, ClassNotFoundException {
-    boolean exists = false;
-
-    try (Connection con = DatabaseConnector.getConnection()) {
-        String query = "SELECT COUNT(*) FROM consumerinfo WHERE FirstName = ? AND LastName = ?";
-        PreparedStatement stmt = (PreparedStatement) con.prepareStatement(query);
-        stmt.setString(1, firstName);
-        stmt.setString(2, lastName);
-
-        try (ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                exists = rs.getInt(1) > 0;
-            }
-        }
-    }
-
-    return exists;
-}
-
-public int getExistingSerialID(String firstName, String lastName) throws SQLException, ClassNotFoundException {
-    int serialID = -1; 
-
-    try (Connection con = DatabaseConnector.getConnection()) {
-        String query = "SELECT SerialID FROM consumerinfo WHERE FirstName = ? AND LastName = ?";
-        PreparedStatement stmt = (PreparedStatement) con.prepareStatement(query);
-        stmt.setString(1, firstName);
-        stmt.setString(2, lastName);
-
-        try (ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                serialID = rs.getInt("SerialID");
-            }
-        }
-    }
-
-    return serialID;
-}
 
     private void firstNameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_firstNameFieldActionPerformed
         // TODO add your handling code here:
@@ -788,6 +831,16 @@ public int getExistingSerialID(String firstName, String lastName) throws SQLExce
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField3ActionPerformed
+
+    private void addressFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addressFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_addressFieldActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        dispose();
+        fetchDataFromDatabase();
+        setVisible(true);
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -826,6 +879,7 @@ public int getExistingSerialID(String firstName, String lastName) throws SQLExce
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Submit;
+    private javax.swing.JTextField addressField;
     private javax.swing.JLabel bg;
     private javax.swing.JComboBox<String> consessionnaireBox;
     private javax.swing.JTextField contactNumField;
@@ -836,6 +890,7 @@ public int getExistingSerialID(String firstName, String lastName) throws SQLExce
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JDialog jDialog2;
     private javax.swing.JLabel jLabel1;
@@ -844,6 +899,7 @@ public int getExistingSerialID(String firstName, String lastName) throws SQLExce
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
