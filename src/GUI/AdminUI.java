@@ -172,8 +172,9 @@ public final class AdminUI extends javax.swing.JFrame {
         jTextField2 = new javax.swing.JTextField();
         jTextField3 = new javax.swing.JTextField();
         jTextField4 = new javax.swing.JTextField();
-        jLabel14 = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
         jFrame1 = new javax.swing.JFrame();
         jButton5 = new javax.swing.JButton();
         jTabbedPane2 = new javax.swing.JTabbedPane();
@@ -414,111 +415,55 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     jDialog2.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
     jPanel5.setBackground(new java.awt.Color(0, 102, 102));
+    jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
     jLabel2.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
-    jLabel2.setForeground(new java.awt.Color(255, 255, 255));
     jLabel2.setText("Serial ID:");
+    jPanel5.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 40, -1, -1));
 
     jLabel4.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
-    jLabel4.setForeground(new java.awt.Color(255, 255, 255));
     jLabel4.setText("Previous Reading:");
+    jPanel5.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 120, -1, 25));
 
     jLabel13.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
-    jLabel13.setForeground(new java.awt.Color(255, 255, 255));
     jLabel13.setText("Current Reading:");
+    jPanel5.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 150, -1, -1));
 
     jTextField1.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             jTextField1ActionPerformed(evt);
         }
     });
+    jPanel5.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 30, 110, -1));
+    jPanel5.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 120, 110, -1));
 
     jTextField3.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             jTextField3ActionPerformed(evt);
         }
     });
+    jPanel5.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 150, 110, -1));
 
     jTextField4.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             jTextField4ActionPerformed(evt);
         }
     });
-
-    jLabel14.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
-    jLabel14.setForeground(new java.awt.Color(252, 252, 252));
-    jLabel14.setText("Meter ID:");
+    jPanel5.add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 60, 110, -1));
 
     jButton4.setBackground(new java.awt.Color(208, 249, 255));
     jButton4.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
     jButton4.setText("Submit");
+    jPanel5.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 190, 97, -1));
 
-    javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-    jPanel5.setLayout(jPanel5Layout);
-    jPanel5Layout.setHorizontalGroup(
-        jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jPanel5Layout.createSequentialGroup()
-            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel5Layout.createSequentialGroup()
-                    .addGap(68, 68, 68)
-                    .addComponent(jLabel14)
-                    .addGap(18, 18, 18)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(jPanel5Layout.createSequentialGroup()
-                    .addGap(12, 12, 12)
-                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel5Layout.createSequentialGroup()
-                            .addGap(59, 59, 59)
-                            .addComponent(jLabel2))
-                        .addComponent(jLabel4))
-                    .addGap(16, 16, 16)
-                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(jPanel5Layout.createSequentialGroup()
-                            .addGap(2, 2, 2)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGroup(jPanel5Layout.createSequentialGroup()
-                    .addGap(17, 17, 17)
-                    .addComponent(jLabel13)
-                    .addGap(18, 18, 18)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(44, 44, 44)
-                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addContainerGap(34, Short.MAX_VALUE))
-    );
-    jPanel5Layout.setVerticalGroup(
-        jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jPanel5Layout.createSequentialGroup()
-            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel5Layout.createSequentialGroup()
-                    .addGap(17, 17, 17)
-                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel5Layout.createSequentialGroup()
-                            .addGap(1, 1, 1)
-                            .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGap(24, 24, 24)
-                    .addComponent(jLabel2)
-                    .addGap(56, 56, 56)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(jPanel5Layout.createSequentialGroup()
-                    .addGap(61, 61, 61)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(54, 54, 54)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(18, 18, 18)
-            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel5Layout.createSequentialGroup()
-                    .addGap(5, 5, 5)
-                    .addComponent(jLabel13))
-                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGap(57, 57, 57))
-        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-            .addComponent(jButton4)
-            .addGap(68, 68, 68))
-    );
+    jLabel14.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
+    jLabel14.setText("Meter ID:");
+    jPanel5.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 60, -1, 24));
 
-    jDialog2.getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 430, 260));
+    jLabel18.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/bg small version.jpg"))); // NOI18N
+    jPanel5.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -10, 420, 250));
+
+    jDialog2.getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 420, 230));
 
     jFrame1.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     jFrame1.setLocationByPlatform(true);
@@ -1021,6 +966,7 @@ public int getExistingSerialID(String firstName, String lastName) throws SQLExce
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
