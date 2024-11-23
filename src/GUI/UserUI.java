@@ -2,13 +2,18 @@ package GUI;
 
 import JDBC.DatabaseConnector;
 import com.mysql.jdbc.PreparedStatement;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -42,6 +47,7 @@ public class UserUI extends javax.swing.JFrame {
     private void initComponents() {
 
         jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
         background = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
@@ -50,9 +56,6 @@ public class UserUI extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
-        jPanel4 = new javax.swing.JPanel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
@@ -68,6 +71,14 @@ public class UserUI extends javax.swing.JFrame {
             }
         });
         getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 510, 90, -1));
+
+        jButton4.setText("Print Invoice");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 510, 170, -1));
 
         background.setFont(new java.awt.Font("Rockwell Extra Bold", 1, 24)); // NOI18N
         background.setText("WATER  BILLING  SYSTEM");
@@ -95,7 +106,7 @@ public class UserUI extends javax.swing.JFrame {
                 .addGap(18, 18, 18))
         );
 
-        jTabbedPane1.addTab("                                      Ledger                                    ", jPanel2);
+        jTabbedPane1.addTab("                                                             Ledger                                                           ", jPanel2);
 
         jPanel3.setOpaque(false);
 
@@ -118,28 +129,7 @@ public class UserUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("                                       Arreas                                       ", jPanel3);
-
-        jScrollPane4.setViewportView(jTable3);
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 831, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        jTabbedPane1.addTab("                                Payment                                   ", jPanel4);
+        jTabbedPane1.addTab("                                                              Arreas                                                              ", jPanel3);
 
         getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, 860, 440));
 
@@ -164,7 +154,12 @@ public class UserUI extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-        public void fetchDataFromDatabase() {
+    
+    public void getArrears(){
+        
+    }
+    
+    public void fetchDataFromDatabase() {
         try (Connection con = DatabaseConnector.getConnection();
              PreparedStatement ps1 = (PreparedStatement) con.prepareStatement(
                  "SELECT l.LedgerID, c.FirstName, c.LastName, l.Debit, l.Credit, l.Description, w.Consumption, l.Date " +
@@ -172,8 +167,15 @@ public class UserUI extends javax.swing.JFrame {
                  "JOIN consumerinfo c ON l.SerialID = c.SerialID " +
                  "JOIN watermeter w ON l.SerialID = w.SerialID " +
                  "WHERE l.SerialID = ?");
-             PreparedStatement ps2 = (PreparedStatement) con.prepareStatement("SELECT * FROM concessionaire")) {
-
+             PreparedStatement ps2 = (PreparedStatement) con.prepareStatement(
+                "SELECT l.SerialID, " +
+                "SUM(l.Debit) AS TotalDebits, " +
+                "SUM(l.Credit) AS TotalCredits, " +
+                "(SUM(l.Debit) - SUM(l.Credit)) AS Arrears " +
+                "FROM ledger l " +
+                "WHERE l.SerialID = ? " +
+                "GROUP BY l.SerialID"))
+        {
             // First query
             ps1.setString(1, ID);
             try (ResultSet rs1 = ps1.executeQuery()) {
@@ -199,6 +201,7 @@ public class UserUI extends javax.swing.JFrame {
             }
 
             // Second query
+            ps2.setString(1, ID);
             try (ResultSet rs2 = ps2.executeQuery()) {
                 DefaultTableModel model = new DefaultTableModel();
                 ResultSetMetaData metaData = rs2.getMetaData();
@@ -225,8 +228,11 @@ public class UserUI extends javax.swing.JFrame {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
-        
+}
+    
+
+    
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         dispose();
         LoginUI loginUI = new LoginUI();
@@ -237,6 +243,11 @@ public class UserUI extends javax.swing.JFrame {
         dispose();
         setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        InvoicePopup invoicePopup = new InvoicePopup(ID);
+        invoicePopup.setVisible(true);
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -278,16 +289,14 @@ public class UserUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable3;
     private javax.swing.JTable jTable4;
     // End of variables declaration//GEN-END:variables
 }

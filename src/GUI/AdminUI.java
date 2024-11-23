@@ -566,14 +566,13 @@ public static int generateMeterID() throws SQLException, ClassNotFoundException 
             // If the user exists, retrieve and display the serial ID
             if (userExists) {
                 int serialID = getExistingSerialID(firstName, lastName);
-                serialIDField.setText(String.valueOf(serialID)); // Display serial ID for existing user
-                passwordField.setVisible(false); // Hide the password field for existing user
+                serialIDField.setText(String.valueOf(serialID));
+                passwordField.setVisible(false);
             } else {
-                // If the user doesn't exist, generate a new serial ID and show the password field
-                int serialID = generateSerialID(firstName, lastName, null);  // Generate serial ID for new user
-                serialIDField.setText(String.valueOf(serialID));  // Display new serial ID
-                passwordField.setVisible(true);  // Show the password field for new user
-                passwordField.requestFocus();   // Focus on the password field
+                int serialID = generateSerialID(firstName, lastName, null); 
+                serialIDField.setText(String.valueOf(serialID));
+                passwordField.setVisible(true);  
+                passwordField.requestFocus(); 
             }
 
         } catch (SQLException | ClassNotFoundException ex) {
@@ -592,7 +591,7 @@ public static int generateMeterID() throws SQLException, ClassNotFoundException 
 
         try (ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
-                exists = rs.getInt(1) > 0;  // If count > 0, the user exists
+                exists = rs.getInt(1) > 0;
             }
         }
     }
@@ -601,7 +600,7 @@ public static int generateMeterID() throws SQLException, ClassNotFoundException 
 }
 
 public int getExistingSerialID(String firstName, String lastName) throws SQLException, ClassNotFoundException {
-    int serialID = -1; // Default value to indicate not found
+    int serialID = -1; 
 
     try (Connection con = DatabaseConnector.getConnection()) {
         String query = "SELECT SerialID FROM consumerinfo WHERE FirstName = ? AND LastName = ?";
