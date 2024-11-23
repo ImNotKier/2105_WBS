@@ -3,11 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/PC/Documents/GitHub/2105_WBS/src/GUI/AdminUI.java</file>
-            <file>file:/C:/Users/PC/Documents/GitHub/2105_WBS/src/GUI/UserUI.java</file>
-            <file>file:/C:/Users/PC/Documents/GitHub/2105_WBS/src/GUI/InvoicePopup.java</file>
-            <file>file:/C:/Users/PC/Documents/GitHub/2105_WBS/src/GUI/LoginUI.java</file>
-            <file>file:/C:/Users/PC/Documents/GitHub/2105_WBS/src/JDBC/admininfo.java</file>
+            <file>file:/C:/Users/catib/Documents/GitHub/2105_WBS/src/GUI/AdminUI.java</file>
+            <file>file:/C:/Users/catib/Documents/GitHub/2105_WBS/src/GUI/InvoicePopup.java</file>
+            <file>file:/C:/Users/catib/Documents/GitHub/2105_WBS/src/GUI/LoginUI.java</file>
+            <file>file:/C:/Users/catib/Documents/GitHub/2105_WBS/src/GUI/UserUI.java</file>
         </group>
     </open-files>
 </project-private>
