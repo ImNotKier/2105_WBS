@@ -468,6 +468,17 @@ public void deleteUser(int serialID) {
         jLabel23 = new javax.swing.JLabel();
         jLabel24 = new javax.swing.JLabel();
         jLabel25 = new javax.swing.JLabel();
+        charges = new javax.swing.JDialog();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
+        jLabel27 = new javax.swing.JLabel();
+        jButton5 = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
+        jTextField9 = new javax.swing.JTextField();
+        jTextField10 = new javax.swing.JTextField();
+        jLabel28 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         generatebills = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
@@ -670,9 +681,9 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(30, 30, 30)
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel7)
-                                .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel7))
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))))
                 .addGroup(jPanel4Layout.createSequentialGroup()
                     .addComponent(jLabel8)
@@ -680,7 +691,6 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
                     .addComponent(serialIDField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
             .addComponent(jLabel10)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
@@ -849,6 +859,50 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     jLabel25.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/image-460x240.jpg"))); // NOI18N
     jLabel25.setText("jLabel25");
     jDialog3.getContentPane().add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 460, 230));
+
+    charges.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+    jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+    jLabel2.setFont(new java.awt.Font("Segoe UI Emoji", 3, 18)); // NOI18N
+    jLabel2.setText("Charges");
+    jPanel6.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 20, -1, -1));
+
+    jLabel17.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
+    jLabel17.setText("Serial ID: ");
+    jPanel6.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 70, -1, -1));
+
+    jLabel26.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
+    jLabel26.setText("Ammount:");
+    jPanel6.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 110, -1, -1));
+
+    jLabel27.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
+    jLabel27.setText("Charges Description:");
+    jPanel6.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 170, -1, -1));
+
+    jButton5.setBackground(new java.awt.Color(224, 248, 228));
+    jButton5.setFont(new java.awt.Font("Segoe UI Symbol", 1, 14)); // NOI18N
+    jButton5.setText("SUBMIT");
+    jButton5.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton5ActionPerformed(evt);
+        }
+    });
+    jPanel6.add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 180, -1, -1));
+
+    jTextField1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+    jPanel6.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 110, 99, -1));
+
+    jTextField9.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+    jPanel6.add(jTextField9, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 60, 99, -1));
+
+    jTextField10.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+    jPanel6.add(jTextField10, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 160, 99, -1));
+
+    jLabel28.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/image-460x240.jpg"))); // NOI18N
+    jPanel6.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 450, 230));
+
+    charges.getContentPane().add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 470, 230));
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setLocationByPlatform(true);
@@ -1272,6 +1326,10 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
         }); 
     }//GEN-LAST:event_jButton9ActionPerformed
 
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton5ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1311,6 +1369,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JButton Submit;
     private javax.swing.JTextField addressField;
     private javax.swing.JLabel bg;
+    private javax.swing.JDialog charges;
     private javax.swing.JComboBox<String> consessionnaireBox;
     private javax.swing.JTextField contactNumField;
     private javax.swing.JScrollPane disconnectionTable;
@@ -1324,6 +1383,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
     private javax.swing.JComboBox<String> jComboBox1;
@@ -1338,14 +1398,19 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1358,12 +1423,15 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JTable jTable3;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField10;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
@@ -1371,6 +1439,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
+    private javax.swing.JTextField jTextField9;
     private javax.swing.JTextField lastNameField;
     private javax.swing.JTextField meterIDField;
     private javax.swing.JTextField passwordField;
