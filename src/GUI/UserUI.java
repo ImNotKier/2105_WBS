@@ -2,18 +2,11 @@ package GUI;
 
 import JDBC.DatabaseConnector;
 import com.mysql.jdbc.PreparedStatement;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -31,8 +24,10 @@ public class UserUI extends javax.swing.JFrame {
      * Creates new form UserUI
      */
     static private String ID;
-    public UserUI(String ID) {
+    static private boolean fromLogin;
+    public UserUI(String ID, boolean fromLogin) {
         this.ID = ID;
+        this.fromLogin = fromLogin;
         initComponents();
         fetchDataFromDatabase();
     }
@@ -63,7 +58,7 @@ public class UserUI extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox<>();
         jButton5 = new javax.swing.JButton();
         bg = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
+        jButton9 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         background = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
@@ -154,17 +149,15 @@ public class UserUI extends javax.swing.JFrame {
 
         jDialog2.getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1000, 562));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jButton3.setText("Refresh");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 510, 90, -1));
+        jButton9.setBackground(new java.awt.Color(209, 244, 210));
+        jButton9.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
+        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/loading-arrow.png"))); // NOI18N
+        jButton9.setText("Refresh");
+        getContentPane().add(jButton9, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 510, 110, -1));
 
         jButton4.setText("Print Invoice");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -328,15 +321,14 @@ public class UserUI extends javax.swing.JFrame {
     
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if(!fromLogin){
         dispose();
         LoginPage loginUI = new LoginPage();
-        loginUI.setVisible(true);
+        loginUI.setVisible(true);}
+        else{
+            JOptionPane.showMessageDialog(null, "opened from Admin\nCannot log out");
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        dispose();
-        setVisible(true);
-    }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         InvoicePopup invoicePopup = new InvoicePopup(ID);
@@ -381,7 +373,7 @@ public class UserUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new UserUI(ID).setVisible(true);
+                new UserUI(ID,fromLogin).setVisible(true);
             }
         });
     }
@@ -391,9 +383,9 @@ public class UserUI extends javax.swing.JFrame {
     private javax.swing.JLabel bg;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton9;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JDialog jDialog2;

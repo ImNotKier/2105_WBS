@@ -50,6 +50,7 @@ public class LoginPage extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setLocationByPlatform(true);
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -133,7 +134,7 @@ public class LoginPage extends javax.swing.JFrame {
             String passID = fetchDataFromDatabase(ID);
             if (passID != null && passID.equals(passwordString)) {
                 java.awt.EventQueue.invokeLater(() -> {
-                    UserUI userFrame = new UserUI(ID); // Pass the current ID
+                    UserUI userFrame = new UserUI(ID,false); // Pass the current ID
                     userFrame.setVisible(true);
                 });
                 dispose();
