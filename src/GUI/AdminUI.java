@@ -2,9 +2,6 @@ package GUI;
 
 import JDBC.DatabaseConnector;
 import com.mysql.jdbc.PreparedStatement;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -12,10 +9,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import javax.swing.table.DefaultTableModel;
 
 
@@ -132,6 +125,59 @@ public final class AdminUI extends javax.swing.JFrame {
         e.printStackTrace();
         // Handle exceptions appropriately (e.g., display error message)
     }
+}
+    
+public static int generateSerialID(String firstName, String lastName, String password) throws SQLException, ClassNotFoundException {
+    int serialID = 0; // Default value for existing users
+
+    try (Connection con = DatabaseConnector.getConnection()) {
+        // 1. Check if the name combination exists in the database
+        String query = "SELECT SerialID FROM consumerinfo WHERE FirstName = ? AND LastName = ?";
+        PreparedStatement stmt = (PreparedStatement) con.prepareStatement(query);
+        stmt.setString(1, firstName);
+        stmt.setString(2, lastName);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            // 2. If a match is found, return the existing SerialID
+            serialID = rs.getInt("SerialID");
+        } else {
+            // 3. If no match is found, predict the next available SerialID
+            String maxSerialIDQuery = "SELECT MAX(SerialID) AS maxSerialID FROM consumerinfo";
+            PreparedStatement maxStmt = (PreparedStatement) con.prepareStatement(maxSerialIDQuery);
+            ResultSet maxRs = maxStmt.executeQuery();
+            
+            if (maxRs.next()) {
+                serialID = maxRs.getInt("maxSerialID") + 1; // Predict next SerialID
+            } else {
+                serialID = 1; // If the table is empty, start with SerialID = 1
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return serialID;
+}
+public static int generateMeterID() throws SQLException, ClassNotFoundException {
+    int meterID = 0; // Default value for new meters
+
+    try (Connection con = DatabaseConnector.getConnection()) {
+        // 1. Fetch the highest MeterID in the database to predict the next available MeterID
+        String maxMeterIDQuery = "SELECT MAX(MeterID) AS maxMeterID FROM watermeter";
+        PreparedStatement maxStmt = (PreparedStatement) con.prepareStatement(maxMeterIDQuery);
+        ResultSet maxRs = maxStmt.executeQuery();
+        
+        if (maxRs.next()) {
+            meterID = maxRs.getInt("maxMeterID") + 1; // Predict next MeterID
+        } else {
+            meterID = 1; // If the table is empty, start with MeterID = 1
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return meterID;
 }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -711,60 +757,6 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-public static int generateSerialID(String firstName, String lastName, String password) throws SQLException, ClassNotFoundException {
-    int serialID = 0; // Default value for existing users
-
-    try (Connection con = DatabaseConnector.getConnection()) {
-        // 1. Check if the name combination exists in the database
-        String query = "SELECT SerialID FROM consumerinfo WHERE FirstName = ? AND LastName = ?";
-        PreparedStatement stmt = (PreparedStatement) con.prepareStatement(query);
-        stmt.setString(1, firstName);
-        stmt.setString(2, lastName);
-        ResultSet rs = stmt.executeQuery();
-
-        if (rs.next()) {
-            // 2. If a match is found, return the existing SerialID
-            serialID = rs.getInt("SerialID");
-        } else {
-            // 3. If no match is found, predict the next available SerialID
-            String maxSerialIDQuery = "SELECT MAX(SerialID) AS maxSerialID FROM consumerinfo";
-            PreparedStatement maxStmt = (PreparedStatement) con.prepareStatement(maxSerialIDQuery);
-            ResultSet maxRs = maxStmt.executeQuery();
-            
-            if (maxRs.next()) {
-                serialID = maxRs.getInt("maxSerialID") + 1; // Predict next SerialID
-            } else {
-                serialID = 1; // If the table is empty, start with SerialID = 1
-            }
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-
-    return serialID;
-}
-public static int generateMeterID() throws SQLException, ClassNotFoundException {
-    int meterID = 0; // Default value for new meters
-
-    try (Connection con = DatabaseConnector.getConnection()) {
-        // 1. Fetch the highest MeterID in the database to predict the next available MeterID
-        String maxMeterIDQuery = "SELECT MAX(MeterID) AS maxMeterID FROM watermeter";
-        PreparedStatement maxStmt = (PreparedStatement) con.prepareStatement(maxMeterIDQuery);
-        ResultSet maxRs = maxStmt.executeQuery();
-        
-        if (maxRs.next()) {
-            meterID = maxRs.getInt("maxMeterID") + 1; // Predict next MeterID
-        } else {
-            meterID = 1; // If the table is empty, start with MeterID = 1
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-
-    return meterID;
-}
-
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         jDialog1.pack();
         jDialog1.setVisible(true);
@@ -775,20 +767,7 @@ public static int generateMeterID() throws SQLException, ClassNotFoundException 
         loginUI.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
     private void meterIDFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_meterIDFieldActionPerformed
-        meterIDField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    // Call the method to generate the next available MeterID
-                    int meterID = generateMeterID();
-                    
-                    // Set the predicted MeterID to the meterIDField
-                    meterIDField.setText(String.valueOf(meterID)); // Display the predicted MeterID
-                } catch (SQLException | ClassNotFoundException ex) {
-                    Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
+
     }//GEN-LAST:event_meterIDFieldActionPerformed
     private void serialIDFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serialIDFieldActionPerformed
         // TODO add your handling code here:
@@ -806,66 +785,18 @@ public static int generateMeterID() throws SQLException, ClassNotFoundException 
         // TODO add your handling code here:
     }//GEN-LAST:event_emailFieldActionPerformed
      private void lastNameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lastNameFieldActionPerformed
-         String firstName = firstNameField.getText().trim(); // Get first name
-    String lastName = lastNameField.getText().trim();   // Get last name
+        String firstName = firstNameField.getText().trim(); // Get first name
+        String lastName = lastNameField.getText().trim();   // Get last name
         try {
-            // Check if the user exists in the database
-            boolean userExists = checkIfUserExists(firstName, lastName);
-
-            // If the user exists, retrieve and display the serial ID
-            if (userExists) {
-                int serialID = getExistingSerialID(firstName, lastName);
-                serialIDField.setText(String.valueOf(serialID));
-                passwordField.setVisible(false);
-            } else {
                 int serialID = generateSerialID(firstName, lastName, null); 
                 serialIDField.setText(String.valueOf(serialID));
-                passwordField.setVisible(true);  
-                passwordField.requestFocus(); 
-            }
+                int meterID = generateMeterID();
+                meterIDField.setText(String.valueOf(meterID));
 
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_lastNameFieldActionPerformed
-
-    public boolean checkIfUserExists(String firstName, String lastName) throws SQLException, ClassNotFoundException {
-    boolean exists = false;
-
-    try (Connection con = DatabaseConnector.getConnection()) {
-        String query = "SELECT COUNT(*) FROM consumerinfo WHERE FirstName = ? AND LastName = ?";
-        PreparedStatement stmt = (PreparedStatement) con.prepareStatement(query);
-        stmt.setString(1, firstName);
-        stmt.setString(2, lastName);
-
-        try (ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                exists = rs.getInt(1) > 0;
-            }
-        }
-    }
-
-    return exists;
-}
-
-public int getExistingSerialID(String firstName, String lastName) throws SQLException, ClassNotFoundException {
-    int serialID = -1; 
-
-    try (Connection con = DatabaseConnector.getConnection()) {
-        String query = "SELECT SerialID FROM consumerinfo WHERE FirstName = ? AND LastName = ?";
-        PreparedStatement stmt = (PreparedStatement) con.prepareStatement(query);
-        stmt.setString(1, firstName);
-        stmt.setString(2, lastName);
-
-        try (ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                serialID = rs.getInt("SerialID");
-            }
-        }
-    }
-
-    return serialID;
-}
 
     private void firstNameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_firstNameFieldActionPerformed
         // TODO add your handling code here:
