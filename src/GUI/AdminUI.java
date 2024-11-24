@@ -3,6 +3,7 @@ package GUI;
 import JDBC.DatabaseConnector;
 import com.mysql.jdbc.PreparedStatement;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -32,7 +33,7 @@ public final class AdminUI extends javax.swing.JFrame {
         fetchDataFromDatabase();
     }
 
-    public void fetchDataFromDatabase() {
+public void fetchDataFromDatabase() {
     try{
         // Get a database connection
         Connection con = DatabaseConnector.getConnection();
@@ -121,17 +122,33 @@ public final class AdminUI extends javax.swing.JFrame {
         // Handle exceptions appropriately (e.g., display error message)
     }
 }
-    
+public int getSerialID(String ID) throws SQLException, ClassNotFoundException {
+    int serialID = -1;
+
+    try (Connection con = DatabaseConnector.getConnection()) {
+        String query = "SELECT SerialID FROM consumerinfo WHERE MeterID = ?";
+        PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+        ps.setString(1, ID);
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            serialID = rs.getInt("SerialID");
+        } else {
+            // Handle the case where no matching record is found
+            System.out.println("No matching record found for MeterID: " + ID);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        // Handle the exception, e.g., log the error or throw a custom exception
+    }
+
+    return serialID;
+}
 public static int generateSerialID() throws SQLException, ClassNotFoundException {
     int serialID = 0; 
 
     try (Connection con = DatabaseConnector.getConnection()) {
-        
-        String query = "SELECT SerialID FROM consumerinfo";
-        PreparedStatement stmt = (PreparedStatement) con.prepareStatement(query);
-        ResultSet rs = stmt.executeQuery();
 
-        
         String maxSerialIDQuery = "SELECT MAX(SerialID) AS maxSerialID FROM consumerinfo";
         PreparedStatement maxStmt = (PreparedStatement) con.prepareStatement(maxSerialIDQuery);
         ResultSet maxRs = maxStmt.executeQuery();
@@ -167,7 +184,35 @@ public static int generateMeterID() throws SQLException, ClassNotFoundException 
 
     return meterID;
 }
+public static int previousReading(String ID) throws SQLException, ClassNotFoundException {
+    int reading = 0; 
+    try (Connection con = DatabaseConnector.getConnection()) {       
+        String query = "SELECT PresentReading FROM watermeter where MeterID = ?";
+        PreparedStatement stmt = (PreparedStatement) con.prepareStatement(query);
+        stmt.setString(1, ID);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {reading = rs.getInt("PresentReading");
+    }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return reading;
+}
 
+public static int checkIfPaid(String ID) throws SQLException, ClassNotFoundException {
+    try (Connection con = DatabaseConnector.getConnection()) {
+        String query = "SELECT isPaid FROM watermeter WHERE MeterID = ?;";
+        PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+        ps.setString(1, ID);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("isPaid");
+        } else {
+            return -1;
+        }
+    }
+}
+    
 public int concessionaire(String name){
     switch(name){
         case "NasugbuWaters" -> {
@@ -185,6 +230,45 @@ public int concessionaire(String name){
     }
         return 0;
 }
+public void generatebills() {
+    try (Connection con = DatabaseConnector.getConnection()) {       
+        // Query to fetch necessary billing data
+        String query = "SELECT ci.SerialID, d.DebtID, c.ChargeID, " +
+                       "(COALESCE(c.ChargeAmount, 0) + COALESCE(d.AmountDue, 0)) AS TotalAmount, " +
+                       "CURDATE() + INTERVAL 30 DAY AS DueDate " +
+                       "FROM consumerinfo ci " +
+                       "LEFT JOIN debt d ON ci.SerialID = d.MeterID " +
+                       "LEFT JOIN charge c ON ci.SerialID = c.SerialID";    
+        PreparedStatement stmt = (PreparedStatement) con.prepareStatement(query);
+        ResultSet rs = stmt.executeQuery();
+        String insertQuery = "INSERT INTO bill (SerialID, DebtID, ChargeID, BillingAmount, DueDate) " +
+                             "VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement insertStmt = (PreparedStatement) con.prepareStatement(insertQuery);
+        while (rs.next()) {
+            int SerialID = rs.getInt("SerialID");
+            int DebtID = rs.getInt("DebtID");
+            int ChargeID = rs.getInt("ChargeID");
+            float Amount = rs.getFloat("TotalAmount");
+            Date DueDate = rs.getDate("DueDate");
+
+            // Insert the data into the bill table
+            insertStmt.setInt(1, SerialID);
+            insertStmt.setInt(2, DebtID);
+            insertStmt.setInt(3, ChargeID);
+            insertStmt.setFloat(4, Amount);
+            insertStmt.setDate(5, DueDate);
+
+            insertStmt.executeUpdate();
+        }
+
+        System.out.println("Billing data successfully inserted.");
+    } catch (SQLException e) {
+        e.printStackTrace(); // Print the stack trace for easier debugging
+    } catch (ClassNotFoundException ex) {
+        Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+    }
+}
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -219,10 +303,8 @@ public int concessionaire(String name){
         bg = new javax.swing.JLabel();
         jDialog2 = new javax.swing.JDialog();
         jPanel5 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
         jTextField3 = new javax.swing.JTextField();
         jTextField4 = new javax.swing.JTextField();
@@ -245,6 +327,8 @@ public int concessionaire(String name){
         jLabel24 = new javax.swing.JLabel();
         jLabel25 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
+        generatebills1 = new javax.swing.JButton();
+        generatebills = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -488,48 +572,53 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     jPanel5.setBackground(new java.awt.Color(0, 102, 102));
     jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-    jLabel2.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
-    jLabel2.setText("Serial ID:");
-    jPanel5.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 40, -1, -1));
-
     jLabel4.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
     jLabel4.setText("Previous Reading:");
-    jPanel5.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 120, -1, 25));
+    jPanel5.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 90, -1, 25));
 
     jLabel13.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
     jLabel13.setText("Current Reading:");
-    jPanel5.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 150, -1, -1));
+    jPanel5.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 130, -1, -1));
 
-    jTextField1.addActionListener(new java.awt.event.ActionListener() {
+    jTextField2.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jTextField1ActionPerformed(evt);
+            jTextField2ActionPerformed(evt);
         }
     });
-    jPanel5.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 30, 110, -1));
-    jPanel5.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 120, 110, -1));
+    jPanel5.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 90, 110, -1));
 
     jTextField3.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             jTextField3ActionPerformed(evt);
         }
     });
-    jPanel5.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 150, 110, -1));
+    jPanel5.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 130, 110, -1));
 
     jTextField4.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             jTextField4ActionPerformed(evt);
         }
     });
-    jPanel5.add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 60, 110, -1));
+    jTextField4.addKeyListener(new java.awt.event.KeyAdapter() {
+        public void keyReleased(java.awt.event.KeyEvent evt) {
+            jTextField4KeyReleased(evt);
+        }
+    });
+    jPanel5.add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 50, 110, -1));
 
     jButton4.setBackground(new java.awt.Color(208, 249, 255));
     jButton4.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
     jButton4.setText("Submit");
+    jButton4.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton4ActionPerformed(evt);
+        }
+    });
     jPanel5.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 190, 97, -1));
 
     jLabel14.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
     jLabel14.setText("Meter ID:");
-    jPanel5.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 60, -1, 24));
+    jPanel5.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 50, -1, 24));
 
     jLabel18.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/bg small version.jpg"))); // NOI18N
     jPanel5.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -10, 420, 250));
@@ -543,8 +632,8 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     jDialog3.getContentPane().add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 94, 60, -1));
 
     jLabel19.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
-    jLabel19.setText("Ammount:");
-    jDialog3.getContentPane().add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 134, 70, -1));
+    jLabel19.setText("Amount:");
+    jDialog3.getContentPane().add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 130, 70, -1));
 
     jLabel20.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
     jLabel20.setText("Meter ID:");
@@ -556,13 +645,34 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
 
     jButton11.setBackground(new java.awt.Color(221, 249, 228));
     jButton11.setFont(new java.awt.Font("Segoe UI Emoji", 1, 12)); // NOI18N
-    jButton11.setText("Add Credit");
-    jDialog3.getContentPane().add(jButton11, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 180, 100, -1));
+    jButton11.setText("Pay");
+    jButton11.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton11ActionPerformed(evt);
+        }
+    });
+    jDialog3.getContentPane().add(jButton11, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 180, 50, 30));
 
+    jTextField5.setEditable(false);
     jTextField5.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
+    jTextField5.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jTextField5ActionPerformed(evt);
+        }
+    });
     jDialog3.getContentPane().add(jTextField5, new org.netbeans.lib.awtextra.AbsoluteConstraints(128, 91, 80, -1));
 
     jTextField6.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
+    jTextField6.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jTextField6ActionPerformed(evt);
+        }
+    });
+    jTextField6.addKeyListener(new java.awt.event.KeyAdapter() {
+        public void keyReleased(java.awt.event.KeyEvent evt) {
+            jTextField6KeyReleased(evt);
+        }
+    });
     jDialog3.getContentPane().add(jTextField6, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 90, 80, -1));
 
     jTextField7.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
@@ -577,7 +687,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
 
     jLabel22.setFont(new java.awt.Font("STKaiti", 3, 20)); // NOI18N
     jLabel22.setText("Payment  Method");
-    jDialog3.getContentPane().add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 10, 164, -1));
+    jDialog3.getContentPane().add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(144, 10, 180, -1));
 
     jLabel23.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/maintenance (1).png"))); // NOI18N
     jLabel23.setText("jLabel23");
@@ -605,6 +715,26 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
         }
     });
     getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 510, -1, 30));
+
+    generatebills1.setBackground(new java.awt.Color(211, 252, 252));
+    generatebills1.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
+    generatebills1.setText("Add Charges");
+    generatebills1.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            generatebills1ActionPerformed(evt);
+        }
+    });
+    getContentPane().add(generatebills1, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 510, -1, 30));
+
+    generatebills.setBackground(new java.awt.Color(211, 252, 252));
+    generatebills.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
+    generatebills.setText("Generate Bills");
+    generatebills.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            generatebillsActionPerformed(evt);
+        }
+    });
+    getContentPane().add(generatebills, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 510, -1, 30));
 
     jTabbedPane1.setPreferredSize(new java.awt.Dimension(930, 540));
 
@@ -727,7 +857,12 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
 
     jButton10.setBackground(new java.awt.Color(211, 252, 252));
     jButton10.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
-    jButton10.setText("Add credits");
+    jButton10.setText("Payment");
+    jButton10.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton10ActionPerformed(evt);
+        }
+    });
     getContentPane().add(jButton10, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 510, 110, 30));
 
     jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Water Systems Earth Science Presentation in Blue White Illustrated Style (1) (1).jpg"))); // NOI18N
@@ -827,16 +962,12 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_jTextField4ActionPerformed
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField3ActionPerformed
-
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         int selectedRow = jTable1.getSelectedRow();
@@ -854,6 +985,114 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private void addressFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addressFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_addressFieldActionPerformed
+
+    private void jTextField4KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField4KeyReleased
+        String ID = jTextField4.getText();
+        try {
+            int prevReading = previousReading(ID);
+            jTextField2.setText(String.valueOf(prevReading));
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jTextField4KeyReleased
+
+    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField2ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        String ID = jTextField4.getText();
+        int paid = 0;
+
+        try {
+            paid = checkIfPaid(ID);  // Check payment status
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try (Connection con = DatabaseConnector.getConnection()) {
+            if (paid == 1) {
+                
+                String currentReading = jTextField3.getText();  
+
+                String getReadingQuery = "SELECT PresentReading FROM watermeter WHERE MeterID = ?;";
+                PreparedStatement ps = (PreparedStatement) con.prepareStatement(getReadingQuery);
+                ps.setString(1, ID);
+                ResultSet rs = ps.executeQuery();
+
+                if (rs.next()) {
+                    float presentReading = rs.getFloat("PresentReading");
+                    String updateHistoryQuery = "INSERT INTO reading_history (MeterID, PreviousReading, DateRecorded) VALUES (?, ?, CURDATE())";
+                    PreparedStatement historyStmt = (PreparedStatement) con.prepareStatement(updateHistoryQuery);
+                    historyStmt.setString(1, ID);
+                    historyStmt.setFloat(2, presentReading);
+                    historyStmt.executeUpdate();
+                }
+
+                String updatePaidStatusQuery = "UPDATE watermeter SET isPaid = 0 WHERE MeterID = ?;";
+                PreparedStatement updatePaidStmt = (PreparedStatement) con.prepareStatement(updatePaidStatusQuery);
+                updatePaidStmt.setString(1, ID);
+                updatePaidStmt.executeUpdate();
+
+                String updateReadingQuery = "UPDATE watermeter SET PresentReading = ? WHERE MeterID = ?;";
+                PreparedStatement updateReadingStmt = (PreparedStatement) con.prepareStatement(updateReadingQuery);
+                updateReadingStmt.setString(1, currentReading);  // Assuming the current reading is a String, can be converted to float if necessary
+                updateReadingStmt.setString(2, ID);
+                updateReadingStmt.executeUpdate();
+
+                System.out.println("Payment updated and readings saved.");
+
+            } else {
+                String currentReading = jTextField3.getText();
+
+                String updateReadingQuery = "UPDATE watermeter SET PresentReading = ? WHERE MeterID = ?;";
+                PreparedStatement updateReadingStmt = (PreparedStatement) con.prepareStatement(updateReadingQuery);
+                updateReadingStmt.setString(1, currentReading);  // Can cast this to float if required
+                updateReadingStmt.setString(2, ID);
+                updateReadingStmt.executeUpdate();
+
+                System.out.println("Reading updated, user has not paid.");
+            }
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    jDialog2.dispose();
+    }//GEN-LAST:event_jButton4ActionPerformed
+        
+    private void generatebillsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generatebillsActionPerformed
+        generatebills();
+    }//GEN-LAST:event_generatebillsActionPerformed
+
+    private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField5ActionPerformed
+
+    private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField6ActionPerformed
+
+    private void jTextField6KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField6KeyReleased
+        String ID = jTextField6.getText();
+        try {
+            int sID = getSerialID(ID);
+            jTextField5.setText(String.valueOf(sID));
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jTextField6KeyReleased
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        jDialog3.pack();
+        jDialog3.setVisible(true);
+    }//GEN-LAST:event_jButton10ActionPerformed
+
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton11ActionPerformed
+
+    private void generatebills1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generatebills1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_generatebills1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -899,6 +1138,8 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JScrollPane disconnectionTable;
     private javax.swing.JTextField emailField;
     private javax.swing.JTextField firstNameField;
+    private javax.swing.JButton generatebills;
+    private javax.swing.JButton generatebills1;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
@@ -921,7 +1162,6 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
@@ -946,7 +1186,6 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JTable jTable3;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
