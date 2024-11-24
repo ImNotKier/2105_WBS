@@ -4,12 +4,22 @@
  */
 package GUI;
 
+import JDBC.DatabaseConnector;
+import JDBC.admininfo;
+import com.mysql.jdbc.PreparedStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author catib
  */
 public class LoginPage extends javax.swing.JFrame {
-
+    JFrame adminFrame = new AdminUI();
+    public static String userIDDB;
     /**
      * Creates new form LoginPage
      */
@@ -45,7 +55,7 @@ public class LoginPage extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("STKaiti", 1, 24)); // NOI18N
         jLabel2.setText("Login");
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 90, 60, -1));
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 90, 90, -1));
 
         jLabel3.setFont(new java.awt.Font("STZhongsong", 1, 25)); // NOI18N
         jLabel3.setText("WATER  BILLING  SYSTEM");
@@ -76,6 +86,11 @@ public class LoginPage extends javax.swing.JFrame {
         jButton1.setBackground(new java.awt.Color(211, 243, 211));
         jButton1.setFont(new java.awt.Font("Segoe UI Semibold", 1, 16)); // NOI18N
         jButton1.setText("SUBMIT");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 310, -1, -1));
 
         jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/login bg (1).jpg"))); // NOI18N
@@ -95,6 +110,60 @@ public class LoginPage extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        admininfo adIn = new admininfo();
+        String selectedItem = (String) jComboBox1.getSelectedItem();
+        String ID = jTextField1.getText().trim(); // Get current ID
+        userIDDB = ID; // Update global variable
+        char[] pass = jPasswordField1.getPassword();
+        String passwordString = new String(pass);
+        String admin = adIn.getID();
+        String pwAdmin = adIn.getAdminPassword();
+
+        if ("Admin".equals(selectedItem)) {
+            if (pwAdmin.equals(passwordString) && ID.equals(admin)) {
+                java.awt.EventQueue.invokeLater(() -> {
+                    adminFrame.setVisible(true);
+                });
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, "Incorrect username or password. Please try again.", "Login Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            String passID = fetchDataFromDatabase(ID);
+            if (passID != null && passID.equals(passwordString)) {
+                java.awt.EventQueue.invokeLater(() -> {
+                    UserUI userFrame = new UserUI(ID); // Pass the current ID
+                    userFrame.setVisible(true);
+                });
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, "Incorrect username or password. Please try again.", "Login Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+    public String fetchDataFromDatabase(String ID) {
+        if (ID == null || ID.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid SerialID.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        String pass = null;
+        try (Connection con = DatabaseConnector.getConnection();
+             PreparedStatement ps = (PreparedStatement) con.prepareStatement("SELECT Password FROM consumerinfo WHERE SerialID = ?")) {
+
+            ps.setString(1, ID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    pass = rs.getString("Password");
+                }
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return pass;
+    }
     /**
      * @param args the command line arguments
      */

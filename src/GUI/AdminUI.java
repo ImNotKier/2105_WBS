@@ -84,13 +84,7 @@ public final class AdminUI extends javax.swing.JFrame {
         jTable2.setModel(model);
         
         // for forDisconnections
-        String sql = "SELECT ci.SerialID, ci.FirstName, ci.LastName, " +
-             "(COALESCE(SUM(c.Amount), 0) - COALESCE(SUM(d.Amount), 0)) AS Balance " +
-             "FROM consumerinfo ci " +
-             "LEFT JOIN charge c ON ci.SerialID = c.SerialID " +
-             "LEFT JOIN debt d ON ci.SerialID = d.SerialID AND d.DueDate < CURDATE() " +  // Condition moved to JOIN
-             "GROUP BY ci.SerialID " +
-             "HAVING Balance > 0";
+        String sql = "SELECT * FROM concessionaire";
 
 
         rs = st.executeQuery(sql);
@@ -844,7 +838,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     }//GEN-LAST:event_jButton1ActionPerformed
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         dispose();
-        LoginUI loginUI = new LoginUI();
+        LoginPage loginUI = new LoginPage();
         loginUI.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
     private void meterIDFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_meterIDFieldActionPerformed

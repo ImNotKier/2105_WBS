@@ -329,7 +329,7 @@ public class UserUI extends javax.swing.JFrame {
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         dispose();
-        LoginUI loginUI = new LoginUI();
+        LoginPage loginUI = new LoginPage();
         loginUI.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
