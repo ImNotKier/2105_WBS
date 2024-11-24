@@ -15,9 +15,7 @@ import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 
@@ -97,7 +95,7 @@ public final class AdminUI extends javax.swing.JFrame {
              "(COALESCE(SUM(c.Amount), 0) - COALESCE(SUM(d.Amount), 0)) AS Balance " +
              "FROM consumerinfo ci " +
              "LEFT JOIN charge c ON ci.SerialID = c.SerialID " +
-             "LEFT JOIN debt d ON ci.SerialID = d.SerialID AND d.DueDate < CURDATE() " +
+             "LEFT JOIN debt d ON ci.SerialID = d.SerialID AND d.DueDate < CURDATE() " +  // Condition moved to JOIN
              "GROUP BY ci.SerialID " +
              "HAVING Balance > 0";
 
@@ -193,10 +191,6 @@ public final class AdminUI extends javax.swing.JFrame {
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jLabel17 = new javax.swing.JLabel();
-        jButton8 = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
-        jButton11 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
@@ -597,44 +591,6 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     setMinimumSize(new java.awt.Dimension(930, 540));
     getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-    jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/loading-arrow.png"))); // NOI18N
-    jButton8.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jButton8ActionPerformed(evt);
-        }
-    });
-    getContentPane().add(jButton8, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 510, 30, -1));
-
-    jButton9.setBackground(new java.awt.Color(224, 255, 255));
-    jButton9.setFont(new java.awt.Font("STXinwei", 1, 12)); // NOI18N
-    jButton9.setText("Open Consumer");
-    jButton9.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jButton9ActionPerformed(evt);
-        }
-    });
-    getContentPane().add(jButton9, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 510, -1, 30));
-
-    jButton10.setBackground(new java.awt.Color(224, 255, 255));
-    jButton10.setFont(new java.awt.Font("STXinwei", 1, 12)); // NOI18N
-    jButton10.setText("Add Charges");
-    jButton10.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jButton10ActionPerformed(evt);
-        }
-    });
-    getContentPane().add(jButton10, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 510, -1, 30));
-
-    jButton11.setBackground(new java.awt.Color(224, 255, 255));
-    jButton11.setFont(new java.awt.Font("STXinwei", 1, 12)); // NOI18N
-    jButton11.setText("Add Credits");
-    jButton11.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jButton11ActionPerformed(evt);
-        }
-    });
-    getContentPane().add(jButton11, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 510, -1, 30));
-
     jButton2.setBackground(new java.awt.Color(224, 255, 255));
     jButton2.setFont(new java.awt.Font("STXinwei", 1, 12)); // NOI18N
     jButton2.setText("New Reading");
@@ -643,7 +599,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
             jButton2ActionPerformed(evt);
         }
     });
-    getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 510, -1, 30));
+    getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 510, -1, 30));
 
     jTabbedPane1.setPreferredSize(new java.awt.Dimension(930, 540));
 
@@ -739,14 +695,14 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
 
     jButton3.setBackground(new java.awt.Color(224, 255, 255));
     jButton3.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
-    jButton3.setText("Log out");
+    jButton3.setText("Log   out");
     jButton3.setPreferredSize(new java.awt.Dimension(87, 25));
     jButton3.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             jButton3ActionPerformed(evt);
         }
     });
-    getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 510, 110, -1));
+    getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 510, 130, -1));
 
     jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Water Systems Earth Science Presentation in Blue White Illustrated Style (1) (1).jpg"))); // NOI18N
     getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-20, -8, 990, 560));
@@ -948,34 +904,6 @@ public int getExistingSerialID(String firstName, String lastName) throws SQLExce
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton7ActionPerformed
 
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        dispose();
-        setVisible(true);
-    }//GEN-LAST:event_jButton8ActionPerformed
-
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        int selectedRow = jTable1.getSelectedRow();
-        if (selectedRow >= 0) {
-            Integer ID = (Integer) jTable1.getValueAt(selectedRow, 0);
-            String idString = ID.toString();
-
-            SwingUtilities.invokeLater(() -> {
-            UserUI userFrame = new UserUI(idString, true);
-            userFrame.setVisible(true);
-        });
-        } else {
-            JOptionPane.showMessageDialog(null, "Please select a row.");
-        }
-    }//GEN-LAST:event_jButton9ActionPerformed
-
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton10ActionPerformed
-
-    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton11ActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -1021,16 +949,12 @@ public int getExistingSerialID(String firstName, String lastName) throws SQLExce
     private javax.swing.JTextField emailField;
     private javax.swing.JTextField firstNameField;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton10;
-    private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JDialog jDialog2;
     private javax.swing.JFrame jFrame1;

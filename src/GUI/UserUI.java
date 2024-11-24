@@ -31,10 +31,8 @@ public class UserUI extends javax.swing.JFrame {
      * Creates new form UserUI
      */
     static private String ID;
-    static private boolean fromAdmin;
-    public UserUI(String ID, boolean fromAdmin) {
+    public UserUI(String ID) {
         this.ID = ID;
-        this.fromAdmin = fromAdmin;
         initComponents();
         fetchDataFromDatabase();
     }
@@ -48,9 +46,7 @@ public class UserUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         background = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
@@ -60,52 +56,29 @@ public class UserUI extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1000, 562));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jButton1.setBackground(new java.awt.Color(224, 255, 255));
-        jButton1.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
-        jButton1.setText("Log out");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 510, 120, -1));
-
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/loading-arrow.png"))); // NOI18N
-        jButton3.setOpaque(true);
+        jButton3.setText("Refresh");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 510, 30, 30));
+        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 510, 90, -1));
 
-        jButton5.setBackground(new java.awt.Color(227, 242, 242));
-        jButton5.setFont(new java.awt.Font("Nirmala UI", 1, 14)); // NOI18N
-        jButton5.setText("Add Credits");
-        jButton5.setBorder(null);
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
-            }
-        });
-        getContentPane().add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 510, 170, 30));
-
-        jButton4.setBackground(new java.awt.Color(227, 242, 242));
-        jButton4.setFont(new java.awt.Font("Nirmala UI", 1, 14)); // NOI18N
         jButton4.setText("Print Invoice");
-        jButton4.setBorder(null);
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 510, 170, 30));
+        getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 510, 170, -1));
 
         background.setFont(new java.awt.Font("Rockwell Extra Bold", 1, 24)); // NOI18N
         background.setText("WATER  BILLING  SYSTEM");
@@ -160,9 +133,22 @@ public class UserUI extends javax.swing.JFrame {
 
         getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, 860, 440));
 
+        jButton1.setBackground(new java.awt.Color(224, 255, 255));
+        jButton1.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
+        jButton1.setText("Log  out");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 510, 120, -1));
+
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Water Systems Earth Science Presentation in Blue White Illustrated Style (1) (1).jpg"))); // NOI18N
         jLabel1.setText("background");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-20, -10, 1000, 560));
+
+        jButton2.setText("jButton2");
+        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 40, -1, -1));
 
         pack();
         setLocationRelativeTo(null);
@@ -245,15 +231,12 @@ public class UserUI extends javax.swing.JFrame {
 }
     
 
+    
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if(fromAdmin){
-            JOptionPane.showMessageDialog(null, "Cannot log out,\n opened from Admin");
-        }
-        else{
         dispose();
         LoginUI loginUI = new LoginUI();
         loginUI.setVisible(true);
-        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -265,10 +248,6 @@ public class UserUI extends javax.swing.JFrame {
         InvoicePopup invoicePopup = new InvoicePopup(ID);
         invoicePopup.setVisible(true);
     }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -300,8 +279,7 @@ public class UserUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                
-                new UserUI(ID, fromAdmin).setVisible(true);
+                new UserUI(ID).setVisible(true);
             }
         });
     }
@@ -309,9 +287,9 @@ public class UserUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel background;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

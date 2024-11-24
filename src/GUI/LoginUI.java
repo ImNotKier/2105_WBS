@@ -5,9 +5,11 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import JDBC.DatabaseConnector;
 import com.mysql.jdbc.PreparedStatement;
+import com.mysql.jdbc.ResultSetMetaData;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import javax.swing.table.DefaultTableModel;
 
 
@@ -238,7 +240,7 @@ public class LoginUI extends javax.swing.JFrame {
             String passID = fetchDataFromDatabase(ID);
             if (passID != null && passID.equals(passwordString)) {
                 java.awt.EventQueue.invokeLater(() -> {
-                    UserUI userFrame = new UserUI(ID, false); 
+                    UserUI userFrame = new UserUI(ID); // Pass the current ID
                     userFrame.setVisible(true);
                 });
                 dispose();
