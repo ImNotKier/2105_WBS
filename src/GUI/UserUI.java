@@ -58,7 +58,6 @@ public class UserUI extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox<>();
         jButton5 = new javax.swing.JButton();
         bg = new javax.swing.JLabel();
-        jButton9 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         background = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
@@ -153,19 +152,13 @@ public class UserUI extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(1000, 562));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jButton9.setBackground(new java.awt.Color(209, 244, 210));
-        jButton9.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
-        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/loading-arrow.png"))); // NOI18N
-        jButton9.setText("Refresh");
-        getContentPane().add(jButton9, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 510, 110, -1));
-
         jButton4.setText("Print Invoice");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 510, 170, -1));
+        getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 510, 170, -1));
 
         background.setFont(new java.awt.Font("Rockwell Extra Bold", 1, 24)); // NOI18N
         background.setText("WATER  BILLING  SYSTEM");
@@ -249,19 +242,9 @@ public class UserUI extends javax.swing.JFrame {
     public void fetchDataFromDatabase() {
         try (Connection con = DatabaseConnector.getConnection();
              PreparedStatement ps1 = (PreparedStatement) con.prepareStatement(
-                 "SELECT l.LedgerID, c.FirstName, c.LastName, l.Debit, l.Credit, l.Description, w.Consumption, l.Date " +
-                 "FROM ledger l " +
-                 "JOIN consumerinfo c ON l.SerialID = c.SerialID " +
-                 "JOIN watermeter w ON l.SerialID = w.SerialID " +
-                 "WHERE l.SerialID = ?");
+                 "SELECT l.LedgerID, l.BillingID, l.SerialID, l.AmountPaid, l.PaymentDate FROM ledger l WHERE l.SerialID = ?; ");
              PreparedStatement ps2 = (PreparedStatement) con.prepareStatement(
-                "SELECT l.SerialID, " +
-                "SUM(l.Debit) AS TotalDebits, " +
-                "SUM(l.Credit) AS TotalCredits, " +
-                "(SUM(l.Debit) - SUM(l.Credit)) AS Arrears " +
-                "FROM ledger l " +
-                "WHERE l.SerialID = ? " +
-                "GROUP BY l.SerialID"))
+                "SELECT d.DebtID, d.AmountDue AS DebtAmount, c.ChargeID, c.ChargeAmount AS ChargeAmount, b.BillingAmount FROM debt d LEFT JOIN charge c ON d.MeterID = c.SerialID LEFT JOIN bill b ON d.DebtID = b.DebtID WHERE b.SerialID = ?; "))
         {
             // First query
             ps1.setString(1, ID);
@@ -331,8 +314,22 @@ public class UserUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        InvoicePopup invoicePopup = new InvoicePopup(ID);
-        invoicePopup.setVisible(true);
+        try {
+            // Assuming ID is a string representing a number
+            int serialID = Integer.parseInt(ID); // Convert the string to an integer
+
+            // Create the InvoicePopup with the serialID
+            InvoicePopup invoicePopup = new InvoicePopup(serialID);
+
+            // Set the popup to be visible
+            invoicePopup.setVisible(true);
+        } catch (NumberFormatException e) {
+            // Handle the case where ID is not a valid integer
+            JOptionPane.showMessageDialog(null, "Invalid ID format. Please enter a valid ID.");
+        } catch (Exception e) {
+            // Handle other unexpected exceptions
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
@@ -385,7 +382,6 @@ public class UserUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton9;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JDialog jDialog2;

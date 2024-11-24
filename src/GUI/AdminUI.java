@@ -11,6 +11,7 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 
@@ -86,7 +87,7 @@ public void fetchDataFromDatabase() {
         jTable2.setModel(model);
         
         // for forDisconnections
-        String sql = "SELECT * FROM concessionaire";
+        String sql = "SELECT b.SerialID, ci.FirstName, ci.LastName,ci.Address, b.BillingID, b.BillingAmount, b.DueDate FROM bill b JOIN consumerinfo ci ON b.SerialID = ci.SerialID WHERE b.DueDate < CURDATE();";
 
 
         rs = st.executeQuery(sql);
@@ -126,13 +127,35 @@ public int getSerialID(String ID) throws SQLException, ClassNotFoundException {
     int serialID = -1;
 
     try (Connection con = DatabaseConnector.getConnection()) {
-        String query = "SELECT SerialID FROM consumerinfo WHERE MeterID = ?";
+        String query = "SELECT SerialID FROM bill WHERE BillingID = ?";
         PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
         ps.setString(1, ID);
         ResultSet rs = ps.executeQuery();
 
         if (rs.next()) {
             serialID = rs.getInt("SerialID");
+        } else {
+            // Handle the case where no matching record is found
+            System.out.println("No matching record found for MeterID: " + ID);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        // Handle the exception, e.g., log the error or throw a custom exception
+    }
+
+    return serialID;
+}
+public float getBillAmount(String ID) throws SQLException, ClassNotFoundException {
+    int serialID = -1;
+
+    try (Connection con = DatabaseConnector.getConnection()) {
+        String query = "SELECT BillingAmount FROM bill WHERE BillingID = ?";
+        PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+        ps.setString(1, ID);
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            serialID = rs.getInt("BillingAmount");
         } else {
             // Handle the case where no matching record is found
             System.out.println("No matching record found for MeterID: " + ID);
@@ -198,7 +221,6 @@ public static int previousReading(String ID) throws SQLException, ClassNotFoundE
     }
     return reading;
 }
-
 public static int checkIfPaid(String ID) throws SQLException, ClassNotFoundException {
     try (Connection con = DatabaseConnector.getConnection()) {
         String query = "SELECT isPaid FROM watermeter WHERE MeterID = ?;";
@@ -212,7 +234,69 @@ public static int checkIfPaid(String ID) throws SQLException, ClassNotFoundExcep
         }
     }
 }
-    
+public void processPayment(String serialID) {
+    Connection con = null; // Declare outside to use in both try and catch
+    try {
+        con = DatabaseConnector.getConnection();
+        con.setAutoCommit(false); // Start a transaction
+
+        // Step 1: Fetch MeterID and BillingID
+        String fetchQuery = "SELECT w.MeterID, b.BillingID " +
+                            "FROM watermeter w " +
+                            "JOIN bill b ON w.SerialID = b.SerialID " +
+                            "WHERE w.SerialID = ?";
+        PreparedStatement fetchStmt = (PreparedStatement) con.prepareStatement(fetchQuery);
+        fetchStmt.setString(1, serialID);
+        ResultSet rs = fetchStmt.executeQuery();
+
+        if (!rs.next()) {
+            System.out.println("No matching records found for SerialID: " + serialID);
+            con.rollback(); // Rollback in case no records are found
+            return;
+        }
+
+        int meterID = rs.getInt("MeterID");
+        int billingID = rs.getInt("BillingID");
+
+        // Step 2: Insert into ledger
+        String insertLedgerQuery = "INSERT INTO ledger (BillingID, SerialID, AmountPaid, PaymentDate) " +
+                                   "SELECT BillingID, SerialID, BillingAmount AS AmountPaid, CURDATE() AS PaymentDate " +
+                                   "FROM bill WHERE BillingID = ?";
+        PreparedStatement insertLedgerStmt = (PreparedStatement) con.prepareStatement(insertLedgerQuery);
+        insertLedgerStmt.setInt(1, billingID);
+        insertLedgerStmt.executeUpdate();
+
+        // Step 3: Update isPaid in watermeter
+        String updateWatermeterQuery = "UPDATE watermeter SET isPaid = 1 WHERE MeterID = ?";
+        PreparedStatement updateStmt = (PreparedStatement) con.prepareStatement(updateWatermeterQuery);
+        updateStmt.setInt(1, meterID);
+        updateStmt.executeUpdate();
+
+        // Commit the transaction
+        con.commit();
+        System.out.println("Payment processed successfully for SerialID: " + serialID);
+
+    } catch (SQLException | ClassNotFoundException ex) {
+        Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+        if (con != null) {
+            try {
+                con.rollback(); // Rollback on error
+                System.out.println("Transaction rolled back due to an error.");
+            } catch (SQLException rollbackEx) {
+                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, rollbackEx);
+            }
+        }
+    } finally {
+        if (con != null) {
+            try {
+                con.setAutoCommit(true); // Reset auto-commit mode
+                con.close(); // Ensure the connection is closed
+            } catch (SQLException closeEx) {
+                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, closeEx);
+            }
+        }
+    }
+}
 public int concessionaire(String name){
     switch(name){
         case "NasugbuWaters" -> {
@@ -266,6 +350,64 @@ public void generatebills() {
         e.printStackTrace(); // Print the stack trace for easier debugging
     } catch (ClassNotFoundException ex) {
         Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+    }
+}
+public void deleteUser(int serialID) {
+    Connection con = null;
+    try {
+        con = DatabaseConnector.getConnection();
+        con.setAutoCommit(false); // Start a transaction
+
+        // Step 1: Delete from ledger table
+        String deleteLedgerQuery = "DELETE l " +
+                                   "FROM ledger l " +
+                                   "JOIN bill b ON l.BillingID = b.BillingID " +
+                                   "WHERE b.SerialID = ?";
+        PreparedStatement deleteLedgerStmt = (PreparedStatement) con.prepareStatement(deleteLedgerQuery);
+        deleteLedgerStmt.setInt(1, serialID);
+        deleteLedgerStmt.executeUpdate();
+
+        // Step 2: Delete from bill table
+        String deleteBillQuery = "DELETE FROM bill WHERE SerialID = ?";
+        PreparedStatement deleteBillStmt = (PreparedStatement) con.prepareStatement(deleteBillQuery);
+        deleteBillStmt.setInt(1, serialID);
+        deleteBillStmt.executeUpdate();
+
+        // Step 3: Delete from watermeter table
+        String deleteWatermeterQuery = "DELETE FROM watermeter WHERE SerialID = ?";
+        PreparedStatement deleteWatermeterStmt = (PreparedStatement) con.prepareStatement(deleteWatermeterQuery);
+        deleteWatermeterStmt.setInt(1, serialID);
+        deleteWatermeterStmt.executeUpdate();
+
+        // Step 4: Delete from consumerinfo table
+        String deleteConsumerInfoQuery = "DELETE FROM consumerinfo WHERE SerialID = ?";
+        PreparedStatement deleteConsumerInfoStmt = (PreparedStatement) con.prepareStatement(deleteConsumerInfoQuery);
+        deleteConsumerInfoStmt.setInt(1, serialID);
+        deleteConsumerInfoStmt.executeUpdate();
+
+        // Commit transaction
+        con.commit();
+        System.out.println("All records deleted for SerialID: " + serialID);
+
+    } catch (SQLException | ClassNotFoundException ex) {
+        Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+        if (con != null) {
+            try {
+                con.rollback(); // Rollback in case of error
+                System.out.println("Transaction rolled back due to an error.");
+            } catch (SQLException rollbackEx) {
+                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, rollbackEx);
+            }
+        }
+    } finally {
+        if (con != null) {
+            try {
+                con.setAutoCommit(true); // Reset auto-commit mode
+                con.close(); // Close the connection
+            } catch (SQLException closeEx) {
+                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, closeEx);
+            }
+        }
     }
 }
 
@@ -327,7 +469,6 @@ public void generatebills() {
         jLabel24 = new javax.swing.JLabel();
         jLabel25 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
-        generatebills1 = new javax.swing.JButton();
         generatebills = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
@@ -337,6 +478,7 @@ public void generatebills() {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
+        generatebills1 = new javax.swing.JButton();
         disconnectionTable = new javax.swing.JScrollPane();
         jTable3 = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
@@ -625,6 +767,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
 
     jDialog2.getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 420, 230));
 
+    jDialog3.setLocationByPlatform(true);
     jDialog3.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
     jLabel15.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
@@ -636,8 +779,8 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     jDialog3.getContentPane().add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 130, 70, -1));
 
     jLabel20.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
-    jLabel20.setText("Meter ID:");
-    jDialog3.getContentPane().add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(256, 88, -1, 25));
+    jLabel20.setText("Bill ID:");
+    jDialog3.getContentPane().add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 90, -1, 25));
 
     jLabel21.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
     jLabel21.setText("Account: ");
@@ -675,7 +818,13 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     });
     jDialog3.getContentPane().add(jTextField6, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 90, 80, -1));
 
+    jTextField7.setEditable(false);
     jTextField7.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
+    jTextField7.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jTextField7ActionPerformed(evt);
+        }
+    });
     jDialog3.getContentPane().add(jTextField7, new org.netbeans.lib.awtextra.AbsoluteConstraints(128, 131, 80, -1));
 
     jTextField8.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
@@ -715,16 +864,6 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
         }
     });
     getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 510, -1, 30));
-
-    generatebills1.setBackground(new java.awt.Color(211, 252, 252));
-    generatebills1.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
-    generatebills1.setText("Add Charges");
-    generatebills1.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            generatebills1ActionPerformed(evt);
-        }
-    });
-    getContentPane().add(generatebills1, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 510, -1, 30));
 
     generatebills.setBackground(new java.awt.Color(211, 252, 252));
     generatebills.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
@@ -791,6 +930,15 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
 
     jPanel3.setOpaque(false);
 
+    generatebills1.setBackground(new java.awt.Color(211, 252, 252));
+    generatebills1.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
+    generatebills1.setText("Disconnect Selected User");
+    generatebills1.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            generatebills1ActionPerformed(evt);
+        }
+    });
+
     disconnectionTable.setViewportView(jTable3);
 
     javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -799,14 +947,18 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
         jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel3Layout.createSequentialGroup()
             .addContainerGap()
-            .addComponent(disconnectionTable, javax.swing.GroupLayout.DEFAULT_SIZE, 821, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(disconnectionTable, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE)
+                .addComponent(generatebills1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addContainerGap())
     );
     jPanel3Layout.setVerticalGroup(
         jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel3Layout.createSequentialGroup()
             .addContainerGap()
-            .addComponent(disconnectionTable, javax.swing.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
+            .addComponent(disconnectionTable, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(generatebills1)
             .addContainerGap())
     );
 
@@ -853,6 +1005,11 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     jButton9.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
     jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/loading-arrow.png"))); // NOI18N
     jButton9.setText("Refresh");
+    jButton9.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton9ActionPerformed(evt);
+        }
+    });
     getContentPane().add(jButton9, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 25, 110, -1));
 
     jButton10.setBackground(new java.awt.Color(211, 252, 252));
@@ -1075,7 +1232,9 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
         String ID = jTextField6.getText();
         try {
             int sID = getSerialID(ID);
+            float amount = getBillAmount(ID);
             jTextField5.setText(String.valueOf(sID));
+            jTextField7.setText(String.valueOf(amount));
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1087,12 +1246,31 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        // TODO add your handling code here:
+        String ID = jTextField5.getText();
+        processPayment(ID);
     }//GEN-LAST:event_jButton11ActionPerformed
 
-    private void generatebills1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generatebills1ActionPerformed
+    private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed
         // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField7ActionPerformed
+
+    private void generatebills1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generatebills1ActionPerformed
+        int selectedRow = jTable3.getSelectedRow();
+        if (selectedRow >= 0) {
+            Integer ID = (Integer) jTable3.getValueAt(selectedRow, 0);
+            deleteUser(ID);
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select a row.");
+        }
     }//GEN-LAST:event_generatebills1ActionPerformed
+
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+        this.dispose();
+        SwingUtilities.invokeLater(() -> {
+            AdminUI newAdminUI = new AdminUI();
+            newAdminUI.setVisible(true);
+        }); 
+    }//GEN-LAST:event_jButton9ActionPerformed
 
     /**
      * @param args the command line arguments
