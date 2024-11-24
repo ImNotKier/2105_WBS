@@ -127,31 +127,24 @@ public final class AdminUI extends javax.swing.JFrame {
     }
 }
     
-public static int generateSerialID(String firstName, String lastName, String password) throws SQLException, ClassNotFoundException {
-    int serialID = 0; // Default value for existing users
+public static int generateSerialID() throws SQLException, ClassNotFoundException {
+    int serialID = 0; 
 
     try (Connection con = DatabaseConnector.getConnection()) {
-        // 1. Check if the name combination exists in the database
-        String query = "SELECT SerialID FROM consumerinfo WHERE FirstName = ? AND LastName = ?";
+        
+        String query = "SELECT SerialID FROM consumerinfo";
         PreparedStatement stmt = (PreparedStatement) con.prepareStatement(query);
-        stmt.setString(1, firstName);
-        stmt.setString(2, lastName);
         ResultSet rs = stmt.executeQuery();
 
-        if (rs.next()) {
-            // 2. If a match is found, return the existing SerialID
-            serialID = rs.getInt("SerialID");
+        
+        String maxSerialIDQuery = "SELECT MAX(SerialID) AS maxSerialID FROM consumerinfo";
+        PreparedStatement maxStmt = (PreparedStatement) con.prepareStatement(maxSerialIDQuery);
+        ResultSet maxRs = maxStmt.executeQuery();
+
+        if (maxRs.next()) {
+            serialID = maxRs.getInt("maxSerialID") + 1; 
         } else {
-            // 3. If no match is found, predict the next available SerialID
-            String maxSerialIDQuery = "SELECT MAX(SerialID) AS maxSerialID FROM consumerinfo";
-            PreparedStatement maxStmt = (PreparedStatement) con.prepareStatement(maxSerialIDQuery);
-            ResultSet maxRs = maxStmt.executeQuery();
-            
-            if (maxRs.next()) {
-                serialID = maxRs.getInt("maxSerialID") + 1; // Predict next SerialID
-            } else {
-                serialID = 1; // If the table is empty, start with SerialID = 1
-            }
+            serialID = 1; // If the table is empty, start with SerialID = 1
         }
     } catch (SQLException e) {
         e.printStackTrace();
@@ -788,7 +781,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
         String firstName = firstNameField.getText().trim(); // Get first name
         String lastName = lastNameField.getText().trim();   // Get last name
         try {
-                int serialID = generateSerialID(firstName, lastName, null); 
+                int serialID = generateSerialID(); 
                 serialIDField.setText(String.valueOf(serialID));
                 int meterID = generateMeterID();
                 meterIDField.setText(String.valueOf(meterID));
