@@ -475,12 +475,13 @@ public void deleteUser(int serialID) {
         jLabel26 = new javax.swing.JLabel();
         jLabel27 = new javax.swing.JLabel();
         jButton5 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField9 = new javax.swing.JTextField();
-        jTextField10 = new javax.swing.JTextField();
+        CAmount = new javax.swing.JTextField();
+        ChargeSID = new javax.swing.JTextField();
+        CDesc = new javax.swing.JTextField();
         jLabel28 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         generatebills = new javax.swing.JButton();
+        generatebills2 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -873,8 +874,8 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     jPanel6.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 70, -1, -1));
 
     jLabel26.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
-    jLabel26.setText("Ammount:");
-    jPanel6.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 110, -1, -1));
+    jLabel26.setText("Amount:");
+    jPanel6.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 110, -1, -1));
 
     jLabel27.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
     jLabel27.setText("Charges Description:");
@@ -890,14 +891,14 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     });
     jPanel6.add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 180, -1, -1));
 
-    jTextField1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-    jPanel6.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 110, 99, -1));
+    CAmount.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+    jPanel6.add(CAmount, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 110, 99, -1));
 
-    jTextField9.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-    jPanel6.add(jTextField9, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 60, 99, -1));
+    ChargeSID.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+    jPanel6.add(ChargeSID, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 60, 99, -1));
 
-    jTextField10.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-    jPanel6.add(jTextField10, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 160, 99, -1));
+    CDesc.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+    jPanel6.add(CDesc, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 160, 99, -1));
 
     jLabel28.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/image-460x240.jpg"))); // NOI18N
     jPanel6.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 450, 230));
@@ -927,7 +928,17 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
             generatebillsActionPerformed(evt);
         }
     });
-    getContentPane().add(generatebills, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 510, -1, 30));
+    getContentPane().add(generatebills, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 510, -1, 30));
+
+    generatebills2.setBackground(new java.awt.Color(211, 252, 252));
+    generatebills2.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
+    generatebills2.setText("Add Charges");
+    generatebills2.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            generatebills2ActionPerformed(evt);
+        }
+    });
+    getContentPane().add(generatebills2, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 510, -1, 30));
 
     jTabbedPane1.setPreferredSize(new java.awt.Dimension(930, 540));
 
@@ -1327,8 +1338,32 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
+        try (Connection con = DatabaseConnector.getConnection()) {
+            String ID = ChargeSID.getText();
+            String amount = CAmount.getText();
+            String desc = CDesc.getText();
+            int mID = generateMeterID();
+            String insertConsumerQuery = """
+                INSERT INTO charge (SerialID, ChargeAmount, DateIncurred, Description)
+                VALUES (?, ?, CURDATE(), ?, );
+                """;
+            try (PreparedStatement consumerStmt = (PreparedStatement) con.prepareStatement(insertConsumerQuery)) {
+                consumerStmt.setString(1, ID);
+                consumerStmt.setString(2, amount);
+                consumerStmt.setString(3, desc);
+
+            }
+            JOptionPane.showMessageDialog(this, "Charge successfully added!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void generatebills2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generatebills2ActionPerformed
+        charges.pack();
+        charges.setVisible(true);
+    }//GEN-LAST:event_generatebills2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1366,6 +1401,9 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField CAmount;
+    private javax.swing.JTextField CDesc;
+    private javax.swing.JTextField ChargeSID;
     private javax.swing.JButton Submit;
     private javax.swing.JTextField addressField;
     private javax.swing.JLabel bg;
@@ -1377,6 +1415,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JTextField firstNameField;
     private javax.swing.JButton generatebills;
     private javax.swing.JButton generatebills1;
+    private javax.swing.JButton generatebills2;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
@@ -1430,8 +1469,6 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JTable jTable3;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField10;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
@@ -1439,7 +1476,6 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
-    private javax.swing.JTextField jTextField9;
     private javax.swing.JTextField lastNameField;
     private javax.swing.JTextField meterIDField;
     private javax.swing.JTextField passwordField;
