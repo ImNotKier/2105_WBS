@@ -358,8 +358,8 @@
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="                                                      Arreas                                                              ">
-                <Property name="tabTitle" type="java.lang.String" value="                                                      Arreas                                                              "/>
+              <JTabbedPaneConstraints tabName="                                                      Arrears                                                              ">
+                <Property name="tabTitle" type="java.lang.String" value="                                                      Arrears                                                              "/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>

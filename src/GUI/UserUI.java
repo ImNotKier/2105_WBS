@@ -209,7 +209,7 @@ public class UserUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("                                                      Arreas                                                              ", jPanel3);
+        jTabbedPane1.addTab("                                                      Arrears                                                              ", jPanel3);
 
         getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, 860, 440));
 
@@ -244,7 +244,7 @@ public class UserUI extends javax.swing.JFrame {
              PreparedStatement ps1 = (PreparedStatement) con.prepareStatement(
                  "SELECT l.LedgerID, l.BillingID, l.SerialID, l.AmountPaid, l.PaymentDate FROM ledger l WHERE l.SerialID = ?; ");
              PreparedStatement ps2 = (PreparedStatement) con.prepareStatement(
-                "SELECT d.DebtID, d.AmountDue AS DebtAmount, c.ChargeID, c.ChargeAmount AS ChargeAmount, b.BillingAmount FROM debt d LEFT JOIN charge c ON d.MeterID = c.SerialID LEFT JOIN bill b ON d.DebtID = b.DebtID WHERE b.SerialID = ?; "))
+                "SELECT DISTINCT d.DebtID, d.AmountDue AS DebtAmount, c.ChargeID, c.ChargeAmount AS ChargeAmount, b.BillingAmount FROM debt d LEFT JOIN charge c ON d.MeterID = c.SerialID LEFT JOIN bill b ON d.DebtID = b.DebtID WHERE b.SerialID = ?;"))
         {
             // First query
             ps1.setString(1, ID);
@@ -343,38 +343,6 @@ public class UserUI extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UserUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UserUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UserUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UserUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new UserUI(ID,fromLogin).setVisible(true);
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel background;
     private javax.swing.JLabel bg;

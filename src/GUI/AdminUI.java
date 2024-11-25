@@ -241,10 +241,7 @@ public void processPayment(String serialID) {
         con.setAutoCommit(false); // Start a transaction
 
         // Step 1: Fetch MeterID and BillingID
-        String fetchQuery = "SELECT w.MeterID, b.BillingID " +
-                            "FROM watermeter w " +
-                            "JOIN bill b ON w.SerialID = b.SerialID " +
-                            "WHERE w.SerialID = ?";
+        String fetchQuery = "SELECT ci.SerialID, b.BillingID FROM consumerinfo ci JOIN bill b ON ci.SerialID = b.SerialID WHERE ci.SerialID = ?;";
         PreparedStatement fetchStmt = (PreparedStatement) con.prepareStatement(fetchQuery);
         fetchStmt.setString(1, serialID);
         ResultSet rs = fetchStmt.executeQuery();
@@ -255,7 +252,7 @@ public void processPayment(String serialID) {
             return;
         }
 
-        int meterID = rs.getInt("MeterID");
+        int meterID = rs.getInt("SerialID");
         int billingID = rs.getInt("BillingID");
 
         // Step 2: Insert into ledger
@@ -271,11 +268,14 @@ public void processPayment(String serialID) {
         PreparedStatement updateStmt = (PreparedStatement) con.prepareStatement(updateWatermeterQuery);
         updateStmt.setInt(1, meterID);
         updateStmt.executeUpdate();
+        
+        
 
         // Commit the transaction
         con.commit();
         System.out.println("Payment processed successfully for SerialID: " + serialID);
 
+        
     } catch (SQLException | ClassNotFoundException ex) {
         Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
         if (con != null) {
@@ -344,7 +344,7 @@ public void generatebills() {
 
             insertStmt.executeUpdate();
         }
-
+JOptionPane.showMessageDialog(null, "Billing data successfully inserted");
         System.out.println("Billing data successfully inserted.");
     } catch (SQLException e) {
         e.printStackTrace(); // Print the stack trace for easier debugging
@@ -374,7 +374,7 @@ public void deleteUser(int serialID) {
         deleteBillStmt.executeUpdate();
 
         // Step 3: Delete from watermeter table
-        String deleteWatermeterQuery = "DELETE FROM watermeter WHERE SerialID = ?";
+        String deleteWatermeterQuery = "DELETE FROM watermeter WHERE MeterID = (SELECT MeterID FROM consumerinfo WHERE SerialID = ?);";
         PreparedStatement deleteWatermeterStmt = (PreparedStatement) con.prepareStatement(deleteWatermeterQuery);
         deleteWatermeterStmt.setInt(1, serialID);
         deleteWatermeterStmt.executeUpdate();
@@ -410,7 +410,6 @@ public void deleteUser(int serialID) {
         }
     }
 }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -1108,14 +1107,14 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
         // TODO add your handling code here:
     }//GEN-LAST:event_serialIDFieldActionPerformed
     private void SubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SubmitActionPerformed
-        try (Connection con = DatabaseConnector.getConnection()) {
-            String fname = firstNameField.getText();
+        String fname = firstNameField.getText();
             String lname = lastNameField.getText();
             String pass = passwordField.getText();
             String add = addressField.getText();
             String email = emailField.getText();
             String contact = contactNumField.getText();
-            int concessionaire = concessionaire((String) consessionnaireBox.getSelectedItem());
+            try (Connection con = DatabaseConnector.getConnection()) {
+                        int concessionaire = concessionaire((String) consessionnaireBox.getSelectedItem());
             int mID = generateMeterID();
             String insertConsumerQuery = """
                 INSERT INTO consumerinfo 
@@ -1148,6 +1147,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
         jDialog1.dispose();
+        
     }//GEN-LAST:event_SubmitActionPerformed
     private void consessionnaireBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_consessionnaireBoxActionPerformed
         // TODO add your handling code here:
@@ -1302,6 +1302,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
         String ID = jTextField5.getText();
         processPayment(ID);
+        jDialog3.dispose();
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed
