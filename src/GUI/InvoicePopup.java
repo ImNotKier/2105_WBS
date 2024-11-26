@@ -10,13 +10,15 @@ import java.util.Map;
 
 public class InvoicePopup extends JDialog {
 
-    // Constructor to initialize the InvoicePopup with serialID
     public InvoicePopup(int serialID) {
-        // Fetch data and display the invoice
+        setTitle("Invoice Details");
+        setModal(true);
+        setSize(500, 700);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         fetchAndDisplayInvoice(serialID);
     }
 
-    // Method to fetch and display the invoice data
     private void fetchAndDisplayInvoice(int serialID) {
         Map<String, String> consumerData = new HashMap<>();
         Map<String, String> billingData = new HashMap<>();
@@ -24,9 +26,7 @@ public class InvoicePopup extends JDialog {
         Map<String, String> meterData = new HashMap<>();
         Map<String, String> concessionaireData = new HashMap<>();
 
-        // Fetch data from database based on the serialID
         try (Connection con = DatabaseConnector.getConnection()) {
-            // Consumer Info
             String consumerQuery = "SELECT FirstName, LastName, Address, Email FROM consumerinfo WHERE SerialID = ?";
             try (PreparedStatement stmt = con.prepareStatement(consumerQuery)) {
                 stmt.setInt(1, serialID);
@@ -38,7 +38,6 @@ public class InvoicePopup extends JDialog {
                 }
             }
 
-            // Billing Info
             String billingQuery = "SELECT BillingID, BillingAmount, DueDate FROM bill WHERE SerialID = ?";
             try (PreparedStatement stmt = con.prepareStatement(billingQuery)) {
                 stmt.setInt(1, serialID);
@@ -50,7 +49,6 @@ public class InvoicePopup extends JDialog {
                 }
             }
 
-            // Payment Info
             String paymentQuery = "SELECT AmountPaid, PaymentDate FROM ledger WHERE SerialID = ?";
             try (PreparedStatement stmt = con.prepareStatement(paymentQuery)) {
                 stmt.setInt(1, serialID);
@@ -61,10 +59,9 @@ public class InvoicePopup extends JDialog {
                 }
             }
 
-            // Meter Info
             String meterQuery = "SELECT PresentReading, PreviousReading FROM watermeter WHERE MeterID = (SELECT MeterID FROM consumerinfo WHERE SerialID = ?)";
             try (PreparedStatement stmt = con.prepareStatement(meterQuery)) {
-                stmt.setInt(1, serialID);  // assuming MeterID is linked with SerialID
+                stmt.setInt(1, serialID);
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     meterData.put("Previous Reading", String.valueOf(rs.getDouble("PreviousReading")));
@@ -72,10 +69,9 @@ public class InvoicePopup extends JDialog {
                 }
             }
 
-            // Concessionaire Info
             String concessionaireQuery = "SELECT ConcessionaireName, PricePerCubicMeter FROM concessionaire WHERE ConcessionaireID = (SELECT ConcessionaireID FROM watermeter WHERE MeterID = (SELECT MeterID FROM consumerinfo WHERE SerialID = ?))";
             try (PreparedStatement stmt = con.prepareStatement(concessionaireQuery)) {
-                stmt.setInt(1, serialID);  // Assuming ConcessionaireID is related to the MeterID
+                stmt.setInt(1, serialID);
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     concessionaireData.put("Concessionaire", rs.getString("ConcessionaireName"));
@@ -87,39 +83,28 @@ public class InvoicePopup extends JDialog {
             e.printStackTrace();
         }
 
-        // Now, display the dynamic invoice popup
         SwingUtilities.invokeLater(() -> showDynamicInvoicePopup(consumerData, billingData, paymentData, meterData, concessionaireData));
     }
 
-    // Method to show the dynamic invoice
     private void showDynamicInvoicePopup(Map<String, String> consumerData, Map<String, String> billingData,
-                                     Map<String, String> paymentData, Map<String, String> meterData,
-                                     Map<String, String> concessionaireData) {
+                                         Map<String, String> paymentData, Map<String, String> meterData,
+                                         Map<String, String> concessionaireData) {
 
-        // Create the frame for the invoice popup
-        JDialog invoiceDialog = new JDialog();
-        invoiceDialog.setTitle("Invoice");
-        invoiceDialog.setSize(450, 650);  // Increased height from 500 to 650
-        invoiceDialog.setLocationRelativeTo(null);
-        invoiceDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Main panel
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-        // Title
         JLabel titleLabel = new JLabel("Invoice Details", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titleLabel.setForeground(new Color(33, 150, 243));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Create dynamic panels for each section
         JPanel consumerInfoPanel = createInfoPanel("Consumer Information", consumerData);
         JPanel billingInfoPanel = createInfoPanel("Billing Information", billingData);
         JPanel paymentInfoPanel = createInfoPanel("Payment Information", paymentData);
         JPanel meterInfoPanel = createInfoPanel("Meter Information", meterData);
         JPanel concessionaireInfoPanel = createInfoPanel("Concessionaire Information", concessionaireData);
 
-        // Total Section (displaying total paid dynamically)
         double totalAmount = Double.parseDouble(billingData.get("Amount"));
         double totalPaid = paymentData.containsKey("Amount Paid") ? Double.parseDouble(paymentData.get("Amount Paid")) : 0;
         double balanceDue = totalAmount - totalPaid;
@@ -128,61 +113,56 @@ public class InvoicePopup extends JDialog {
         JLabel paidLabel = new JLabel("Amount Paid: $" + formatAmount(totalPaid), SwingConstants.RIGHT);
         JLabel balanceLabel = new JLabel("Balance Due: $" + formatAmount(balanceDue), SwingConstants.RIGHT);
 
-        totalLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        paidLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        balanceLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        totalLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        paidLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        balanceLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        balanceLabel.setForeground(balanceDue > 0 ? Color.RED : new Color(76, 175, 80));
 
-        totalLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        paidLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        balanceLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        mainPanel.add(titleLabel);
+        mainPanel.add(Box.createVerticalStrut(15));
+        mainPanel.add(consumerInfoPanel);
+        mainPanel.add(Box.createVerticalStrut(15));
+        mainPanel.add(billingInfoPanel);
+        mainPanel.add(Box.createVerticalStrut(15));
+        mainPanel.add(paymentInfoPanel);
+        mainPanel.add(Box.createVerticalStrut(15));
+        mainPanel.add(meterInfoPanel);
+        mainPanel.add(Box.createVerticalStrut(15));
+        mainPanel.add(concessionaireInfoPanel);
+        mainPanel.add(Box.createVerticalStrut(20));
+        mainPanel.add(totalLabel);
+        mainPanel.add(paidLabel);
+        mainPanel.add(balanceLabel);
 
-        // Adding components to the panel with more space
-        panel.add(titleLabel);
-        panel.add(Box.createVerticalStrut(20));  // Increased vertical space
-        panel.add(consumerInfoPanel);
-        panel.add(Box.createVerticalStrut(20));  // Increased vertical space
-        panel.add(billingInfoPanel);
-        panel.add(Box.createVerticalStrut(20));  // Increased vertical space
-        panel.add(paymentInfoPanel);
-        panel.add(Box.createVerticalStrut(20));  // Increased vertical space
-        panel.add(meterInfoPanel);
-        panel.add(Box.createVerticalStrut(20));  // Increased vertical space
-        panel.add(concessionaireInfoPanel);
-        panel.add(Box.createVerticalStrut(20));  // Increased vertical space
-        panel.add(totalLabel);
-        panel.add(paidLabel);
-        panel.add(balanceLabel);
+        JScrollPane scrollPane = new JScrollPane(mainPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        // Adding panel to the dialog and displaying it
-        invoiceDialog.add(panel);
-        invoiceDialog.setVisible(true);
+        add(scrollPane);
+        setVisible(true);
     }
 
-        // Helper method to create information panels dynamically
-        private static JPanel createInfoPanel(String title, Map<String, String> data) {
-            JPanel panel = new JPanel();
-            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-            panel.setBorder(BorderFactory.createTitledBorder(title));
+    private static JPanel createInfoPanel(String title, Map<String, String> data) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(0, 1));
+        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(33, 150, 243), 1), title));
 
-            // Dynamically create labels based on the data map
-            for (Map.Entry<String, String> entry : data.entrySet()) {
-                JLabel label = new JLabel(entry.getKey() + ": " + entry.getValue());
-                label.setAlignmentX(Component.LEFT_ALIGNMENT);
-                panel.add(label);
-            }
-
-            return panel;
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+            JLabel label = new JLabel(entry.getKey() + ": " + entry.getValue());
+            label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            label.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+            panel.add(label);
         }
 
-    // Helper method to format amounts to two decimal places
+        return panel;
+    }
+
     private static String formatAmount(double amount) {
         DecimalFormat df = new DecimalFormat("#,###.00");
         return df.format(amount);
     }
 
-    // For testing purpose (main method to call it with serialID)
     public static void main(String[] args) {
-        int sampleSerialID = 1; // Sample SerialID
-        new InvoicePopup(sampleSerialID); // Create and show the invoice popup
+        int sampleSerialID = 1;
+        new InvoicePopup(sampleSerialID);
     }
 }
