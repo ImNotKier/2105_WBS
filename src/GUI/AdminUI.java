@@ -2,6 +2,7 @@ package GUI;
 
 import JDBC.DatabaseConnector;
 import com.mysql.jdbc.PreparedStatement;
+import java.awt.Font;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -11,8 +12,10 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 
 /*
@@ -32,17 +35,15 @@ public final class AdminUI extends javax.swing.JFrame {
     public AdminUI() {
         initComponents();
         fetchDataFromDatabase();
+        setupRowSorter();
     }
 
 public void fetchDataFromDatabase() {
     try{
-        // Get a database connection
         Connection con = DatabaseConnector.getConnection();
-        // Create a statement
         Statement st = con.createStatement();
-        // Execute the query (replace with your actual table name)
-        ResultSet rs = st.executeQuery("SELECT SerialID, MeterID, FirstName, LastName, Address, ContactNumber, Email  FROM `consumerinfo`");
-        // Get column names from ResultSetMetaData
+        ResultSet rs = st.executeQuery("SELECT SerialID, MeterID, FirstName, LastName, Address, ContactNumber, Email  "
+                + "FROM `consumerinfo` WHERE isConnected = 1");
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
         String[] columnNames = new String[columnCount];
@@ -50,8 +51,6 @@ public void fetchDataFromDatabase() {
             columnNames[i - 1] = metaData.getColumnName(i);
         }
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
-
-        // Populate the table model
         while (rs.next()) {
             Object[] rowData = new Object[columnCount];
             for (int i = 1; i <= columnCount; i++) {
@@ -60,12 +59,10 @@ public void fetchDataFromDatabase() {
             model.addRow(rowData);
         }
 
-        // Set the table model to the JTable
         jTable1.setModel(model);
-        
-        // for jTable2
+
+        //concessionaire
         rs = st.executeQuery("SELECT * FROM concessionaire");
-        // Get column names from ResultSetMetaData
         metaData = rs.getMetaData();
         columnCount = metaData.getColumnCount();
         columnNames = new String[columnCount];
@@ -74,7 +71,6 @@ public void fetchDataFromDatabase() {
         }
         model = new DefaultTableModel(columnNames, 0);
 
-        // Populate the table model
         while (rs.next()) {
             Object[] rowData = new Object[columnCount];
             for (int i = 1; i <= columnCount; i++) {
@@ -83,16 +79,46 @@ public void fetchDataFromDatabase() {
             model.addRow(rowData);
         }
 
-        // Set the table model to the JTable
         jTable2.setModel(model);
         
-        // for forDisconnections
-        String sql = "SELECT b.SerialID, ci.FirstName, ci.LastName,ci.Address, b.BillingID, b.BillingAmount, b.DueDate FROM bill b JOIN consumerinfo ci ON b.SerialID = ci.SerialID WHERE b.DueDate < CURDATE();";
+        // Arrears
+        String sql = "SELECT b.SerialID, ci.FirstName, ci.LastName,ci.Address, b.BillingID, b.BillingAmount, b.DueDate, ci.isConnected "
+                + "FROM bill b JOIN consumerinfo ci ON b.SerialID = ci.SerialID WHERE b.DueDate < CURDATE();";
 
 
         rs = st.executeQuery(sql);
 
-        // Get column names from ResultSetMetaData
+        metaData = rs.getMetaData();
+        columnCount = metaData.getColumnCount();
+        columnNames = new String[columnCount];
+        for (int i = 1; i <= columnCount; i++) {
+            columnNames[i - 1] = metaData.getColumnName(i);
+        }
+        model = new DefaultTableModel(columnNames, 0);
+
+        while (rs.next()) {
+            Object[] rowData = new Object[columnCount];
+            for (int i = 1; i <= columnCount; i++) {
+                rowData[i - 1] = rs.getObject(i);
+            }
+            model.addRow(rowData);
+        }
+        jTable5.setModel(model);
+        String forDisc = "SELECT DISTINCT ci.SerialID, ci.FirstName, ci.LastName, ci.MeterID\n" +
+"FROM bill b\n" +
+"JOIN consumerinfo ci ON b.SerialID = ci.SerialID\n" +
+"WHERE b.DueDate < CURDATE()\n" +
+"AND b.SerialID IN (\n" +
+"    SELECT SerialID\n" +
+"    FROM bill\n" +
+"    WHERE ci.isConnected = 1 AND DueDate < CURDATE()\n" +
+"    GROUP BY SerialID\n" +
+"    HAVING COUNT(SerialID) = 3\n" +
+")\n" +
+"ORDER BY ci.SerialID;";
+
+        rs = st.executeQuery(forDisc);
+
         metaData = rs.getMetaData();
         columnCount = metaData.getColumnCount();
         columnNames = new String[columnCount];
@@ -113,6 +139,30 @@ public void fetchDataFromDatabase() {
         // Set the table model to the JTable
         jTable3.setModel(model);
 
+        String Disconnected = "SELECT SerialID, MeterID, FirstName, LastName, Address, ContactNumber, Email  "
+                + "FROM `consumerinfo` WHERE isConnected = 0";
+
+        rs = st.executeQuery(Disconnected);
+
+        metaData = rs.getMetaData();
+        columnCount = metaData.getColumnCount();
+        columnNames = new String[columnCount];
+        for (int i = 1; i <= columnCount; i++) {
+            columnNames[i - 1] = metaData.getColumnName(i);
+        }
+        model = new DefaultTableModel(columnNames, 0);
+
+        // Populate the table model
+        while (rs.next()) {
+            Object[] rowData = new Object[columnCount];
+            for (int i = 1; i <= columnCount; i++) {
+                rowData[i - 1] = rs.getObject(i);
+            }
+            model.addRow(rowData);
+        }
+
+        // Set the table model to the JTable
+        jTable4.setModel(model);
         // Close resources
         rs.close();
         st.close();
@@ -352,64 +402,117 @@ JOptionPane.showMessageDialog(null, "Billing data successfully inserted");
         Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
     }
 }
-public void deleteUser(int serialID) {
+public void disconnect(int serialID) throws ClassNotFoundException {
     Connection con = null;
+    PreparedStatement disconnectStmt = null;
     try {
         con = DatabaseConnector.getConnection();
-        con.setAutoCommit(false); // Start a transaction
+        con.setAutoCommit(false);
 
-        // Step 1: Delete from ledger table
-        String deleteLedgerQuery = "DELETE l " +
-                                   "FROM ledger l " +
-                                   "JOIN bill b ON l.BillingID = b.BillingID " +
-                                   "WHERE b.SerialID = ?";
-        PreparedStatement deleteLedgerStmt = (PreparedStatement) con.prepareStatement(deleteLedgerQuery);
-        deleteLedgerStmt.setInt(1, serialID);
-        deleteLedgerStmt.executeUpdate();
-
-        // Step 2: Delete from bill table
-        String deleteBillQuery = "DELETE FROM bill WHERE SerialID = ?";
-        PreparedStatement deleteBillStmt = (PreparedStatement) con.prepareStatement(deleteBillQuery);
-        deleteBillStmt.setInt(1, serialID);
-        deleteBillStmt.executeUpdate();
-
-        // Step 3: Delete from watermeter table
-        String deleteWatermeterQuery = "DELETE FROM watermeter WHERE MeterID = (SELECT MeterID FROM consumerinfo WHERE SerialID = ?);";
-        PreparedStatement deleteWatermeterStmt = (PreparedStatement) con.prepareStatement(deleteWatermeterQuery);
-        deleteWatermeterStmt.setInt(1, serialID);
-        deleteWatermeterStmt.executeUpdate();
-
-        // Step 4: Delete from consumerinfo table
-        String deleteConsumerInfoQuery = "DELETE FROM consumerinfo WHERE SerialID = ?";
-        PreparedStatement deleteConsumerInfoStmt = (PreparedStatement) con.prepareStatement(deleteConsumerInfoQuery);
-        deleteConsumerInfoStmt.setInt(1, serialID);
-        deleteConsumerInfoStmt.executeUpdate();
-
-        // Commit transaction
+        String disconnect = "UPDATE consumerinfo SET isConnected = 0 WHERE SerialID = ?;";
+        disconnectStmt = (PreparedStatement) con.prepareStatement(disconnect);
+        disconnectStmt.setInt(1, serialID);
+        
+        int rowsAffected = disconnectStmt.executeUpdate();
         con.commit();
-        System.out.println("All records deleted for SerialID: " + serialID);
-
-    } catch (SQLException | ClassNotFoundException ex) {
-        Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+        System.out.println("Disconnect successful. Rows affected: " + rowsAffected);
+    } catch (SQLException e) {
         if (con != null) {
             try {
-                con.rollback(); // Rollback in case of error
-                System.out.println("Transaction rolled back due to an error.");
+                con.rollback();
+                System.err.println("Transaction rolled back due to an error: " + e.getMessage());
             } catch (SQLException rollbackEx) {
-                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, rollbackEx);
+                System.err.println("Rollback failed: " + rollbackEx.getMessage());
             }
+        } else {
+            System.err.println("Error occurred: " + e.getMessage());
         }
     } finally {
-        if (con != null) {
-            try {
-                con.setAutoCommit(true); // Reset auto-commit mode
-                con.close(); // Close the connection
-            } catch (SQLException closeEx) {
-                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, closeEx);
-            }
+        try {
+            if (disconnectStmt != null) disconnectStmt.close();
+            if (con != null) con.close();
+        } catch (SQLException closeEx) {
+            System.err.println("Failed to close resources: " + closeEx.getMessage());
         }
     }
 }
+
+public void reconnect(int serialID) throws ClassNotFoundException {
+    Connection con = null;
+    PreparedStatement disconnectStmt = null;
+    try {
+        con = DatabaseConnector.getConnection();
+        con.setAutoCommit(false);
+
+        String recon = "UPDATE consumerinfo SET isConnected = 1 WHERE SerialID = ?;";
+        disconnectStmt = (PreparedStatement) con.prepareStatement(recon);
+        disconnectStmt.setInt(1, serialID);
+        
+        int rowsAffected = disconnectStmt.executeUpdate();
+        con.commit();
+        System.out.println("Disconnect successful. Rows affected: " + rowsAffected);
+    } catch (SQLException e) {
+        if (con != null) {
+            try {
+                con.rollback();
+                System.err.println("Transaction rolled back due to an error: " + e.getMessage());
+            } catch (SQLException rollbackEx) {
+                System.err.println("Rollback failed: " + rollbackEx.getMessage());
+            }
+        } else {
+            System.err.println("Error occurred: " + e.getMessage());
+        }
+    } finally {
+        try {
+            if (disconnectStmt != null) disconnectStmt.close();
+            if (con != null) con.close();
+        } catch (SQLException closeEx) {
+            System.err.println("Failed to close resources: " + closeEx.getMessage());
+        }
+    }
+}
+
+private void setupRowSorter() {
+    // Assuming jTable1 is already initialized by NetBeans
+    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+    sorter = new TableRowSorter<>(model);
+    jTable1.setRowSorter(sorter);
+}
+
+private boolean existingArrears(int serialID) throws ClassNotFoundException {
+    boolean exists = false;
+    Connection con = null;
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+
+    try {
+        con = DatabaseConnector.getConnection();
+        String query = "SELECT COUNT(*) " +
+                       "FROM bill b " +
+                       "JOIN consumerinfo ci ON b.SerialID = ci.SerialID " +
+                       "WHERE b.DueDate < CURDATE() AND b.SerialID = ?";
+        stmt = (PreparedStatement) con.prepareStatement(query);
+        stmt.setInt(1, serialID);
+        rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            exists = rs.getInt(1) > 0; // If count is greater than 0, arrears exist
+        }
+    } catch (SQLException e) {
+        System.err.println("Error checking existing arrears: " + e.getMessage());
+    } finally {
+        try {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (con != null) con.close();
+        } catch (SQLException closeEx) {
+            System.err.println("Failed to close resources: " + closeEx.getMessage());
+        }
+    }
+
+    return exists;
+}
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -485,13 +588,21 @@ public void deleteUser(int serialID) {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        search = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
+        jPanel8 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jTable5 = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
-        generatebills1 = new javax.swing.JButton();
+        disconnect = new javax.swing.JButton();
         disconnectionTable = new javax.swing.JScrollPane();
         jTable3 = new javax.swing.JTable();
+        jPanel7 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTable4 = new javax.swing.JTable();
+        reconnect = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
@@ -718,7 +829,6 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
 
     jDialog2.setTitle("Meter Reading");
     jDialog2.setBackground(new java.awt.Color(0, 155, 155));
-    jDialog2.setLocationByPlatform(true);
     jDialog2.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
     jPanel5.setBackground(new java.awt.Color(0, 102, 102));
@@ -777,7 +887,6 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
 
     jDialog2.getContentPane().add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 420, 230));
 
-    jDialog3.setLocationByPlatform(true);
     jDialog3.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
     jLabel15.setFont(new java.awt.Font("Segoe UI Emoji", 1, 14)); // NOI18N
@@ -927,7 +1036,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
             generatebillsActionPerformed(evt);
         }
     });
-    getContentPane().add(generatebills, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 510, -1, 30));
+    getContentPane().add(generatebills, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 510, -1, 30));
 
     generatebills2.setBackground(new java.awt.Color(211, 252, 252));
     generatebills2.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
@@ -943,9 +1052,14 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
 
     jPanel1.setOpaque(false);
 
-    jTable1.setAutoCreateRowSorter(true);
     jTable1.setFont(new java.awt.Font("Nirmala UI", 0, 12)); // NOI18N
     jScrollPane1.setViewportView(jTable1);
+
+    search.addKeyListener(new java.awt.event.KeyAdapter() {
+        public void keyReleased(java.awt.event.KeyEvent evt) {
+            searchKeyReleased(evt);
+        }
+    });
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
@@ -953,18 +1067,21 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
         jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel1Layout.createSequentialGroup()
             .addContainerGap()
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE)
+                .addComponent(search))
             .addContainerGap())
     );
     jPanel1Layout.setVerticalGroup(
         jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 392, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
             .addContainerGap())
     );
 
-    jTabbedPane1.addTab("                    Consumers                    ", jPanel1);
+    jTabbedPane1.addTab("               Consumers               ", jPanel1);
 
     jPanel2.setOpaque(false);
 
@@ -979,8 +1096,8 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
         jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
             .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 826, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(120, 120, 120))
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 836, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(110, 110, 110))
     );
     jPanel2Layout.setVerticalGroup(
         jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -990,16 +1107,42 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
             .addContainerGap())
     );
 
-    jTabbedPane1.addTab("                    Consessionaires                    ", jPanel2);
+    jTabbedPane1.addTab("       Consessionaires       ", jPanel2);
+
+    jPanel8.setOpaque(false);
+
+    jTable5.setAutoCreateRowSorter(true);
+    jTable5.setFont(new java.awt.Font("Nirmala UI", 0, 12)); // NOI18N
+    jTable5.setOpaque(false);
+    jScrollPane4.setViewportView(jTable5);
+
+    javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+    jPanel8.setLayout(jPanel8Layout);
+    jPanel8Layout.setHorizontalGroup(
+        jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 838, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(108, 108, 108))
+    );
+    jPanel8Layout.setVerticalGroup(
+        jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addContainerGap())
+    );
+
+    jTabbedPane1.addTab("                 Arrears                 ", jPanel8);
 
     jPanel3.setOpaque(false);
 
-    generatebills1.setBackground(new java.awt.Color(211, 252, 252));
-    generatebills1.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
-    generatebills1.setText("Disconnect Selected User");
-    generatebills1.addActionListener(new java.awt.event.ActionListener() {
+    disconnect.setBackground(new java.awt.Color(211, 252, 252));
+    disconnect.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
+    disconnect.setText("Disconnect Selected User");
+    disconnect.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
-            generatebills1ActionPerformed(evt);
+            disconnectActionPerformed(evt);
         }
     });
 
@@ -1013,7 +1156,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
             .addContainerGap()
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(disconnectionTable, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE)
-                .addComponent(generatebills1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(disconnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addContainerGap())
     );
     jPanel3Layout.setVerticalGroup(
@@ -1022,11 +1165,47 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
             .addContainerGap()
             .addComponent(disconnectionTable, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(generatebills1)
+            .addComponent(disconnect)
             .addContainerGap())
     );
 
-    jTabbedPane1.addTab("                    For Disconnection                    ", jPanel3);
+    jTabbedPane1.addTab("       For Disconnection       ", jPanel3);
+
+    jPanel7.setOpaque(false);
+
+    jScrollPane3.setViewportView(jTable4);
+
+    reconnect.setBackground(new java.awt.Color(211, 252, 252));
+    reconnect.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
+    reconnect.setText("Reconnect Selected User");
+    reconnect.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            reconnectActionPerformed(evt);
+        }
+    });
+
+    javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+    jPanel7.setLayout(jPanel7Layout);
+    jPanel7Layout.setHorizontalGroup(
+        jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(jPanel7Layout.createSequentialGroup()
+            .addContainerGap()
+            .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane3)
+                .addComponent(reconnect, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE))
+            .addContainerGap())
+    );
+    jPanel7Layout.setVerticalGroup(
+        jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(jPanel7Layout.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 362, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(reconnect)
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+
+    jTabbedPane1.addTab("Disconnected Consumers", jPanel7);
 
     getContentPane().add(jTabbedPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 60, 850, 440));
 
@@ -1042,7 +1221,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
             jButton1ActionPerformed(evt);
         }
     });
-    getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 30, -1, 30));
+    getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 20, -1, 30));
 
     jButton3.setBackground(new java.awt.Color(255, 95, 95));
     jButton3.setFont(new java.awt.Font("STXinwei", 1, 14)); // NOI18N
@@ -1169,45 +1348,41 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private void emailFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emailFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_emailFieldActionPerformed
-
     private void firstNameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_firstNameFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_firstNameFieldActionPerformed
-
     private void passwordFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_passwordFieldActionPerformed
-
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         jDialog2.pack();
         jDialog2.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
-
     private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
         
     }//GEN-LAST:event_jTextField4ActionPerformed
-
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField3ActionPerformed
-
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         int selectedRow = jTable1.getSelectedRow();
         if (selectedRow >= 0) {
-            Integer ID = (Integer) jTable1.getValueAt(selectedRow, 0);
-            String idString = ID.toString();
-
-            UserUI userFrame = new UserUI(idString,true);
-            userFrame.setVisible(true);
+            try {
+                Integer ID = (Integer) jTable1.getValueAt(selectedRow, 0);
+                String idString = ID.toString();
+                
+                UserUI userFrame = new UserUI(idString);
+                userFrame.setVisible(true);
+            } catch (SQLException | ClassNotFoundException ex) {
+                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
             JOptionPane.showMessageDialog(null, "Please select a row.");
         }
     }//GEN-LAST:event_jButton8ActionPerformed
-
     private void addressFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addressFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_addressFieldActionPerformed
-
     private void jTextField4KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField4KeyReleased
         String ID = jTextField4.getText();
         try {
@@ -1217,11 +1392,9 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
             Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jTextField4KeyReleased
-
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField2ActionPerformed
-
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         String ID = jTextField4.getText();
         int paid = 0;
@@ -1280,19 +1453,16 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
         }
     jDialog2.dispose();
     }//GEN-LAST:event_jButton4ActionPerformed
-        
+ 
     private void generatebillsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generatebillsActionPerformed
         generatebills();
     }//GEN-LAST:event_generatebillsActionPerformed
-
     private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField5ActionPerformed
-
     private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField6ActionPerformed
-
     private void jTextField6KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField6KeyReleased
         String ID = jTextField6.getText();
         try {
@@ -1304,32 +1474,31 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
             Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jTextField6KeyReleased
-
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
         jDialog3.pack();
         jDialog3.setVisible(true);
     }//GEN-LAST:event_jButton10ActionPerformed
-
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
         String ID = jTextField5.getText();
         processPayment(ID);
         jDialog3.dispose();
     }//GEN-LAST:event_jButton11ActionPerformed
-
     private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField7ActionPerformed
-
-    private void generatebills1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generatebills1ActionPerformed
+    private void disconnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_disconnectActionPerformed
         int selectedRow = jTable3.getSelectedRow();
         if (selectedRow >= 0) {
-            Integer ID = (Integer) jTable3.getValueAt(selectedRow, 0);
-            deleteUser(ID);
+            try {
+                Integer ID = (Integer) jTable3.getValueAt(selectedRow, 0);
+                disconnect(ID);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
             JOptionPane.showMessageDialog(null, "Please select a row.");
         }
-    }//GEN-LAST:event_generatebills1ActionPerformed
-
+    }//GEN-LAST:event_disconnectActionPerformed
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         this.dispose();
         SwingUtilities.invokeLater(() -> {
@@ -1337,7 +1506,6 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
             newAdminUI.setVisible(true);
         }); 
     }//GEN-LAST:event_jButton9ActionPerformed
-
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         try (Connection con = DatabaseConnector.getConnection()) {
             String ID = ChargeSID.getText();
@@ -1360,11 +1528,37 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton5ActionPerformed
-
     private void generatebills2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generatebills2ActionPerformed
         charges.pack();
         charges.setVisible(true);
     }//GEN-LAST:event_generatebills2ActionPerformed
+    private void reconnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reconnectActionPerformed
+        int selectedRow = jTable4.getSelectedRow();
+        if (selectedRow >= 0) {
+            try {
+                Integer ID = (Integer) jTable4.getValueAt(selectedRow, 0);
+                if(existingArrears(ID)){
+                    JOptionPane.showMessageDialog(null, "Please Settle Debts First");
+                }else{
+                    reconnect(ID);
+                }
+                
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(AdminUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select a row.");
+        }
+    }//GEN-LAST:event_reconnectActionPerformed
+    private void searchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchKeyReleased
+        String searchText = search.getText(); 
+
+        if (searchText.trim().isEmpty()) {
+            sorter.setRowFilter(null);
+        } else {
+            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText));
+        }
+    }//GEN-LAST:event_searchKeyReleased
 
     /**
      * @param args the command line arguments
@@ -1411,11 +1605,11 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JDialog charges;
     private javax.swing.JComboBox<String> consessionnaireBox;
     private javax.swing.JTextField contactNumField;
+    private javax.swing.JButton disconnect;
     private javax.swing.JScrollPane disconnectionTable;
     private javax.swing.JTextField emailField;
     private javax.swing.JTextField firstNameField;
     private javax.swing.JButton generatebills;
-    private javax.swing.JButton generatebills1;
     private javax.swing.JButton generatebills2;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
@@ -1464,12 +1658,18 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JTable jTable3;
+    private javax.swing.JTable jTable4;
+    private javax.swing.JTable jTable5;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
@@ -1480,7 +1680,10 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JTextField lastNameField;
     private javax.swing.JTextField meterIDField;
     private javax.swing.JTextField passwordField;
+    private javax.swing.JButton reconnect;
+    private javax.swing.JTextField search;
     private javax.swing.JTextField serialIDField;
     private javax.swing.JLabel txt;
     // End of variables declaration//GEN-END:variables
+    private TableRowSorter<DefaultTableModel> sorter;
 }

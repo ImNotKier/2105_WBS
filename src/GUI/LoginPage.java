@@ -10,6 +10,8 @@ import com.mysql.jdbc.PreparedStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -134,8 +136,12 @@ public class LoginPage extends javax.swing.JFrame {
             String passID = fetchDataFromDatabase(ID);
             if (passID != null && passID.equals(passwordString)) {
                 java.awt.EventQueue.invokeLater(() -> {
-                    UserUI userFrame = new UserUI(ID,false); // Pass the current ID
-                    userFrame.setVisible(true);
+                    try {
+                        UserUI userFrame = new UserUI(ID);
+                        userFrame.setVisible(true);
+                    } catch (SQLException | ClassNotFoundException ex) {
+                        Logger.getLogger(LoginPage.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 });
                 dispose();
             } else {
