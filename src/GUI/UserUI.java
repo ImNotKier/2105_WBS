@@ -69,6 +69,8 @@ public class UserUI extends javax.swing.JFrame {
         ledgerTable = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         userInfoTable = new javax.swing.JTable();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
@@ -160,7 +162,7 @@ public class UserUI extends javax.swing.JFrame {
                 jButton4ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 510, 170, -1));
+        getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 520, 170, -1));
 
         background.setFont(new java.awt.Font("Rockwell Extra Bold", 1, 24)); // NOI18N
         background.setText("WATER  BILLING  SYSTEM");
@@ -168,15 +170,19 @@ public class UserUI extends javax.swing.JFrame {
 
         jScrollPane1.setViewportView(ledgerTable);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 310, 820, 190));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 220, 820, 150));
 
         jScrollPane2.setViewportView(userInfoTable);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, 820, 270));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, 820, 180));
+
+        jScrollPane3.setViewportView(jTable1);
+
+        getContentPane().add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 370, 820, 140));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/Water Systems Earth Science Presentation in Blue White Illustrated Style (1) (1).jpg"))); // NOI18N
         jLabel1.setText("background");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-20, -10, 1000, 560));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 980, 560));
 
         pack();
         setLocationRelativeTo(null);
@@ -186,13 +192,14 @@ public class UserUI extends javax.swing.JFrame {
     try (Connection con = DatabaseConnector.getConnection()) {
         populateVerticalTable(con, 
             "SELECT A.SerialID, A.FirstName, A.LastName, A.Address, A.ContactNumber, A.Email, A.MeterID, B.PresentReading, "
-                + "B.ReadingDate, B.PreviousReading, B.PreviousReadingDate, B.Consumption, C.ConcessionaireName, D.Name as InspectorName, "
+                + "B.ReadingDate, B.PreviousReading, B.PreviousReadingDate, B.Consumption, C.ConcessionaireName, C.PricePerCubicMeter, D.Name as InspectorName, "
                 + "D.ContactNumber FROM consumerinfo A JOIN watermeter B ON A.MeterID = B.MeterID JOIN concessionaire C ON "
                 + "B.ConcessionaireID = C.ConcessionaireID JOIN meterinspector D ON D.InspectorID = A.InspectorID WHERE A.SerialID = ? "
                 + "AND A.isConnected = 1;",
             ID, userInfoTable, true);
 
-        populateHorizontalTable(con, "SELECT * FROM ledger WHERE SerialID = ?", ID, ledgerTable);
+        populateHorizontalTable(con, "SELECT LedgerID, BillingID, AmountPaid, PaymentDate FROM ledger WHERE SerialID = ?", ID, ledgerTable);
+        populateHorizontalTable(con, "SELECT BillingID, DebtID, ChargeID, BillingAmount, DueDate from bill WHERE SerialID = ? AND isPaid = 0", ID, jTable1);
 
     } catch (SQLException e) {
         JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
@@ -227,46 +234,48 @@ private void populateVerticalTable(Connection con, String query, String id, JTab
 private void populateHorizontalTable(Connection con, String query, String id, JTable table) throws SQLException {
     try (PreparedStatement ps = (PreparedStatement) con.prepareStatement(query)) {
         ps.setString(1, id);
+        
         try (ResultSet rs = ps.executeQuery()) {
             DefaultTableModel model = new DefaultTableModel();
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
 
-            if (rs.next()) {
-                ResultSetMetaData metaData = rs.getMetaData();
-                int columnCount = metaData.getColumnCount();
+            // Fetch column names and add them as column identifiers
+            String[] columnNames = new String[columnCount];
+            for (int i = 1; i <= columnCount; i++) {
+                columnNames[i - 1] = metaData.getColumnName(i);
+            }
+            model.setColumnIdentifiers(columnNames);
 
-                String[] columnNames = new String[columnCount];
-                for (int i = 1; i <= columnCount; i++) {
-                    columnNames[i - 1] = metaData.getColumnName(i);
-                }
-                model.setColumnIdentifiers(columnNames);
+            // Iterate over the result set and add each row
+            while (rs.next()) {
                 Object[] rowData = new Object[columnCount];
                 for (int i = 1; i <= columnCount; i++) {
                     rowData[i - 1] = rs.getObject(i);
                 }
                 model.addRow(rowData);
-            } else {
-                System.out.println("No data found.");
             }
 
+            // Update the table model
             SwingUtilities.invokeLater(() -> table.setModel(model));
         }
     }
 }
 
 
+
     
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        try {
-            int serialID = Integer.parseInt(ID);
-
-            InvoicePopup invoicePopup = new InvoicePopup(serialID);
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow >= 0) {
+            Integer ID = (Integer) jTable1.getValueAt(selectedRow, 0);
+            String idString = ID.toString();
+            InvoicePopup invoicePopup = new InvoicePopup(ID);
             invoicePopup.setVisible(true);
-        } catch (NumberFormatException e) {
-
-            JOptionPane.showMessageDialog(null, "Invalid ID format. Please enter a valid ID.");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select a row.");
         }
+        
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
@@ -299,6 +308,8 @@ private void populateHorizontalTable(Connection con, String query, String id, JT
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
