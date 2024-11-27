@@ -113,7 +113,7 @@ public void fetchDataFromDatabase() {
         
         String forDisc = "SELECT DISTINCT ci.SerialID, ci.FirstName, ci.LastName, ci.MeterID FROM bill b JOIN consumerinfo ci ON "
                 + "b.SerialID = ci.SerialID WHERE b.DueDate < CURDATE() AND b.isPaid = 0 AND ci.isConnected = 1 AND b.SerialID IN "
-                + "( SELECT SerialID FROM bill WHERE DueDate < CURDATE() AND isPaid = 0 GROUP BY SerialID HAVING COUNT(SerialID) = 3 ) "
+                + "( SELECT SerialID FROM bill WHERE DueDate < CURDATE() AND isPaid = 0 GROUP BY SerialID HAVING COUNT(SerialID) >= 3 ) "
                 + "ORDER BY ci.SerialID;";
 
         rs = st.executeQuery(forDisc);
@@ -603,6 +603,9 @@ private void setupRowSorter() {
     DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
     sorter = new TableRowSorter<>(model);
     jTable1.setRowSorter(sorter);
+    DefaultTableModel modl = (DefaultTableModel) jTable5.getModel();
+    sorter = new TableRowSorter<>(modl);
+    jTable5.setRowSorter(sorter);
 }
 
 private boolean existingArrears(int serialID) throws ClassNotFoundException {
@@ -645,36 +648,19 @@ public void addLateFees() throws ClassNotFoundException {
     PreparedStatement insertChargeStmt = null;
     PreparedStatement updateChargeStmt = null;
     PreparedStatement updateBillStmt = null;
-    PreparedStatement lastRunStmt = null;
-    PreparedStatement updateLastRunStmt = null;
     ResultSet rs = null;
 
     // Check if it's the right time of the month
     LocalDate today = LocalDate.now();
-    int dayOfMonth = today.getDayOfMonth(); // Ensure this runs only on a specific day (e.g., 1st of the month)
-    if (dayOfMonth != 1) {
-        System.out.println("Late fees can only be added on the first day of the month.");
+    int dayOfMonth = today.getDayOfMonth(); // Ensure this runs only on a specific day (e.g., 27th of the month)
+    if (dayOfMonth != 27) {
+        System.out.println("Late fees can only be added on the 27th of the month.");
         return;
     }
 
     try {
         con = DatabaseConnector.getConnection();
         con.setAutoCommit(false);
-
-        // Check when the process was last run
-        String checkLastRunQuery = "SELECT LastRunDate FROM process_schedule WHERE ProcessName = 'AddLateFees'";
-        lastRunStmt = (PreparedStatement) con.prepareStatement(checkLastRunQuery);
-        ResultSet lastRunRs = lastRunStmt.executeQuery();
-
-        LocalDate lastRunDate = null;
-        if (lastRunRs.next()) {
-            lastRunDate = lastRunRs.getDate("LastRunDate").toLocalDate();
-        }
-
-        if (lastRunDate != null && ChronoUnit.MONTHS.between(lastRunDate, today) < 1) {
-            System.out.println("Late fees have already been added for this month.");
-            return;
-        }
 
         // Select overdue bills
         String selectQuery = """
@@ -732,16 +718,6 @@ public void addLateFees() throws ClassNotFoundException {
             }
         }
 
-        // Update last run date
-        String updateLastRunQuery = """
-            INSERT INTO process_schedule (ProcessName, LastRunDate) 
-            VALUES ('AddLateFees', ?) 
-            ON DUPLICATE KEY UPDATE LastRunDate = VALUES(LastRunDate);
-            """;
-        updateLastRunStmt = (PreparedStatement) con.prepareStatement(updateLastRunQuery);
-        updateLastRunStmt.setDate(1, java.sql.Date.valueOf(today));
-        updateLastRunStmt.executeUpdate();
-
         con.commit();
         System.out.println("Late fees successfully added to overdue bills.");
     } catch (SQLException e) {
@@ -760,8 +736,6 @@ public void addLateFees() throws ClassNotFoundException {
             if (insertChargeStmt != null) insertChargeStmt.close();
             if (updateChargeStmt != null) updateChargeStmt.close();
             if (updateBillStmt != null) updateBillStmt.close();
-            if (lastRunStmt != null) lastRunStmt.close();
-            if (updateLastRunStmt != null) updateLastRunStmt.close();
             if (con != null) con.close();
         } catch (SQLException closeEx) {
             System.err.println("Failed to close resources: " + closeEx.getMessage());
@@ -849,6 +823,7 @@ public void addLateFees() throws ClassNotFoundException {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         jPanel8 = new javax.swing.JPanel();
+        search1 = new javax.swing.JTextField();
         jScrollPane4 = new javax.swing.JScrollPane();
         jTable5 = new javax.swing.JTable();
         lateFeeButton = new javax.swing.JButton();
@@ -1381,6 +1356,17 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
 
     jPanel8.setOpaque(false);
 
+    search1.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            search1ActionPerformed(evt);
+        }
+    });
+    search1.addKeyListener(new java.awt.event.KeyAdapter() {
+        public void keyReleased(java.awt.event.KeyEvent evt) {
+            search1KeyReleased(evt);
+        }
+    });
+
     jTable5.setAutoCreateRowSorter(true);
     jTable5.setFont(new java.awt.Font("Nirmala UI", 0, 12)); // NOI18N
     jTable5.setOpaque(false);
@@ -1401,16 +1387,19 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
         jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel8Layout.createSequentialGroup()
             .addContainerGap()
-            .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 838, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(lateFeeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 838, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addComponent(search1, javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 823, Short.MAX_VALUE)
+                .addComponent(lateFeeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     jPanel8Layout.setVerticalGroup(
         jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel8Layout.createSequentialGroup()
-            .addContainerGap()
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 361, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(5, 5, 5)
+            .addComponent(search1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 336, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(lateFeeButton)
             .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -2005,6 +1994,20 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField8ActionPerformed
 
+    private void search1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_search1KeyReleased
+        String searchText = search1.getText(); 
+
+        if (searchText.trim().isEmpty()) {
+            sorter.setRowFilter(null);
+        } else {
+            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText));
+        }
+    }//GEN-LAST:event_search1KeyReleased
+
+    private void search1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_search1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_search1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -2136,6 +2139,7 @@ consessionnaireBox.addActionListener(new java.awt.event.ActionListener() {
     private javax.swing.JTextField passwordField;
     private javax.swing.JButton reconnect;
     private javax.swing.JTextField search;
+    private javax.swing.JTextField search1;
     private javax.swing.JTextField serialIDField;
     private javax.swing.JLabel txt;
     // End of variables declaration//GEN-END:variables
